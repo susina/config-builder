@@ -1,0 +1,18 @@
+auto_connect: true
+default_connection: mysql
+connections:
+  mysql:
+    host:     localhost
+    driver:   mysql
+    username: user
+    password: pass
+  sqlite:
+    host:     localhost
+    driver:   sqlite
+    username: user
+    password: pass
+  pgsql:
+      host:     localhost
+      driver:   postgresql
+      username: user
+      password: pass

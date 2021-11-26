@@ -1,0 +1,7 @@
+*.cache
+clover.xml
+composer.phar
+composer.lock
+phpunit.xml
+coverage/
+vendor/
