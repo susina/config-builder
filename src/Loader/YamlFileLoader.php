@@ -24,13 +24,15 @@ class YamlFileLoader extends FileLoader
     /**
      * Loads a Yaml file.
      *
-     * @param string $resource The resource
+     * @param mixed $resource The resource
      * @param string|null $type The resource type
      *
      * @return array
      *
      * @throws AssertionFailedException|ConfigurationException
      * @throws ParseException if something goes wrong in parsing file
+     *
+     * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
      */
     public function load(mixed $resource, ?string $type = null): array
     {

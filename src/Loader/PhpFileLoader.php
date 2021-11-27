@@ -31,12 +31,14 @@ class PhpFileLoader extends FileLoader
     /**
      * Loads a PHP file.
      *
-     * @param string $resource The resource
+     * @param mixed $resource The resource
      * @param string|null $type The resource type
      *
      *
      * @return array
      * @throws AssertionFailedException|ConfigurationException
+     *
+     * @psalm-suppress UnresolvableInclude $path contains a path resolved by FileLocator
      */
     public function load(mixed $resource, ?string $type = null): array
     {

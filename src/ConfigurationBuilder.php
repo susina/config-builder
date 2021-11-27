@@ -290,6 +290,12 @@ final class ConfigurationBuilder
         );
     }
 
+    /**
+     * @return array
+     *
+     * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns a string
+     *                                         if the 3rd function argument is not set to false
+     */
     private function loadFromCache(): array
     {
         $cacheFile = $this->cacheDirectory . DIRECTORY_SEPARATOR . self::CACHE_FILE;

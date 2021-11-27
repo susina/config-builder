@@ -33,9 +33,9 @@ class IniFileLoader extends FileLoader
      * Returns true if this class supports the given resource.
      *
      * @param mixed  $resource A resource
-     * @param string $type     The resource type
+     * @param string|null $type The resource type
      *
-     * @return Boolean true if this class supports the given resource, false otherwise
+     * @return bool true if this class supports the given resource, false otherwise
      */
     public function supports(mixed $resource, string $type = null): bool
     {
@@ -54,6 +54,7 @@ class IniFileLoader extends FileLoader
      */
     public function load(mixed $resource, ?string $type = null): array
     {
+        /** @var string $file */
         $file = $this->getLocator()->locate($resource);
         Assertion::readable($file);
         $ini = parse_ini_file($file, true, INI_SCANNER_RAW);

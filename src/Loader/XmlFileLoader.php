@@ -30,6 +30,8 @@ class XmlFileLoader extends FileLoader
      *
      * @throws AssertionFailedException|ConfigurationException
      * @throws XmlParseException
+     *
+     * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
      */
     public function load(mixed $resource, ?string $type = null): array
     {

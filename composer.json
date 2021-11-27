@@ -1,5 +1,5 @@
 {
-    "name": "susina/config-builder-builder",
+    "name": "susina/config-builder",
     "type": "library",
     "description": "Load and build configuration classes",
     "license": "Apache-2.0",

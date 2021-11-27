@@ -194,12 +194,12 @@ abstract class FileLoader extends BaseFileLoader
     /**
      * Scan recursively an array to find a value of a given key.
      *
-     * @param string $propertyKey The array key
+     * @param int|string $propertyKey The array key
      * @param array $config The array to scan
      *
      * @return \Generator The value or null if not found
      */
-    private function findValue(string $propertyKey, array $config): Generator
+    private function findValue(int|string $propertyKey, array $config): Generator
     {
         foreach ($config as $key => $value) {
             if ($key === $propertyKey) {
@@ -219,6 +219,8 @@ abstract class FileLoader extends BaseFileLoader
      * @throws ConfigurationException if the environment variable is not set
      *
      * @return string|null
+     *
+     * @psalm-suppress FalsableReturnStatement If $envParam is false an exception is thrown
      */
     private function parseEnvironmentParams(string $value): ?string
     {

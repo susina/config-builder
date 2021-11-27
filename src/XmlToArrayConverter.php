@@ -40,7 +40,7 @@ class XmlToArrayConverter
 
         $xml = simplexml_load_string($xmlToParse);
         if ($xml instanceof SimpleXMLElement) {
-            dom_import_simplexml($xml)->ownerDocument->xinclude();
+            dom_import_simplexml($xml)->ownerDocument?->xinclude();
         }
 
         $errors = libxml_get_errors();
@@ -67,6 +67,10 @@ class XmlToArrayConverter
     private function simpleXmlToArray(SimpleXMLElement $xml): array
     {
         $ar = [];
+        /**
+         * @var int|string $k
+         * @var  mixed $v
+         */
         foreach ($xml->children() as $k => $v) {
             // recurse the child
             $child = $this->simpleXmlToArray($v);
@@ -87,7 +91,7 @@ class XmlToArrayConverter
                     }
                 } else {
                     // otherwise, just add the attribute like a child element
-                    if (is_string($child)) {
+                    if (!is_array($child)) {
                         $child = [];
                     }
                     $child[$ak] = $this->getConvertedXmlValue($av);
