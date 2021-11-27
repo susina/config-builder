@@ -10,7 +10,7 @@ namespace Susina\ConfigBuilder\Tests;
 
 use org\bovigo\vfs\vfsStream;
 use Susina\ConfigBuilder\ConfigurationBuilder;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
 use Symfony\Component\Finder\Finder;
@@ -107,7 +107,7 @@ class ConfigurationBuilderTest extends TestCase
 
     public function testAddNonExistentDirectoryThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "fake_dir" was expected to be a directory.');
 
         $builder = new ConfigurationBuilder();
@@ -119,7 +119,7 @@ class ConfigurationBuilderTest extends TestCase
      */
     public function testAddNotReadableDirectoryThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/test_config" was expected to be readable.');
 
         $dir = vfsStream::newDirectory('test_config', 200)->at($this->getRoot());
@@ -177,7 +177,7 @@ class ConfigurationBuilderTest extends TestCase
 
     public function testSetConfigurationClassWithInvalidClassThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Class "Susina\ConfigBuilder\Tests\FakeClass" does not exist.');
 
         ConfigurationBuilder::create()->setConfigurationClass('Susina\ConfigBuilder\Tests\FakeClass');
@@ -193,7 +193,7 @@ class ConfigurationBuilderTest extends TestCase
 
     public function testNotExistentCacheDirectoryThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "/home/cristiano/Github/susina/config-builder/tests/fake_dir" was expected to be a directory.');
 
         ConfigurationBuilder::create()->setCacheDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'fake_dir');
@@ -204,7 +204,7 @@ class ConfigurationBuilderTest extends TestCase
      */
     public function testNotReadableCacheDirectoryThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/config_cache" was expected to be readable.');
 
         $cacheDir = vfsStream::newDirectory('config_cache', 200)->at($this->getRoot());

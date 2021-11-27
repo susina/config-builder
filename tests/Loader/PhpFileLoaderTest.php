@@ -9,7 +9,7 @@
 namespace Susina\ConfigBuilder\Tests\Loader;
 
 use org\bovigo\vfs\vfsStream;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\PhpFileLoader;
 use Susina\ConfigBuilder\Tests\TestCase;
@@ -56,7 +56,7 @@ EOF;
 
     public function testPhpFileHasInvalidContent(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("The configuration file 'nonvalid.php' has invalid content.");
 
         $content = <<<EOF
@@ -70,7 +70,7 @@ EOF;
 
     public function testPhpFileIsEmpty(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("The configuration file 'empty.php' has invalid content.");
 
         vfsStream::newFile('empty.php')->at($this->getRoot())->setContent('');
@@ -83,7 +83,7 @@ EOF;
      */
     public function testConfigFileNotReadableThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/notreadable.php" was expected to be readable.');
 
         $content = <<<EOF

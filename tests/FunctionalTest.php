@@ -10,6 +10,7 @@ namespace Susina\ConfigBuilder\Tests;
 
 use org\bovigo\vfs\vfsStream;
 use Susina\ConfigBuilder\ConfigurationBuilder;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationInit;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
@@ -28,6 +29,18 @@ class FunctionalTest extends TestCase
 
         $this->assertInstanceOf(ConfigurationConstructor::class, $config);
         $this->assertEquals($this->getExpectedParameters(), $config->getParameters());
+    }
+
+    public function testGetConfigurationWithoutSetDefinitionThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessage('No definition class. Please, set one via `setDefinition` method.');
+        ConfigurationBuilder::create()
+            ->addFile('database_config.yml')
+            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->setConfigurationClass(ConfigurationConstructor::class)
+            ->getConfiguration()
+        ;
     }
 
     public function testGetConfigurationWithInitMethod(): void

@@ -8,7 +8,7 @@
 
 namespace Susina\ConfigBuilder\Exception;
 
-class XmlParseException extends ConfigurationException
+class XmlParseBuilderException extends ConfigurationBuilderException
 {
     /**
      * Create an exception based on LibXMLError objects

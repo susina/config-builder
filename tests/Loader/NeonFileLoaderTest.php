@@ -11,7 +11,7 @@ namespace Susina\ConfigBuilder\Tests\Loader;
 use Nette\Neon\Exception;
 use Nette\Neon\Neon;
 use org\bovigo\vfs\vfsStream;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\NeonFileLoader;
 use Susina\ConfigBuilder\Tests\TestCase;
@@ -84,7 +84,7 @@ EOF;
      */
     public function testNeonFileNotReadableThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/notreadable.neon" was expected to be readable.');
 
         $content = <<<EOF

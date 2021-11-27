@@ -8,11 +8,9 @@
 
 namespace Susina\ConfigBuilder;
 
-use Assert\AssertionFailedException;
 use SimpleXMLElement;
-use Stringable;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
-use Susina\ConfigBuilder\Exception\XmlParseException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 
 /**
  * Class to convert an xml string to array
@@ -26,15 +24,17 @@ class XmlToArrayConverter
      *
      * @return array
      *
-     * @throws AssertionFailedException|ConfigurationException If invalid content
-     * @throws XmlParseException If errors while parsing XML
+     * @throws ConfigurationBuilderException If invalid content
+     * @throws XmlParseBuilderException If errors while parsing XML
      */
     public function convert(string $xmlToParse): array
     {
         if ($xmlToParse === '') {
             return [];
         }
-        Assertion::startsWith($xmlToParse, '<', 'Invalid xml content.');
+        if (!str_starts_with($xmlToParse, '<')) {
+            throw new ConfigurationBuilderException('Invalid xml content.');
+        }
 
         $currentInternalErrors = libxml_use_internal_errors(true);
 
@@ -49,7 +49,7 @@ class XmlToArrayConverter
         libxml_use_internal_errors($currentInternalErrors);
 
         if (count($errors) > 0) {
-            throw new XmlParseException($errors);
+            throw new XmlParseBuilderException($errors);
         }
 
         return $this->simpleXmlToArray($xml);

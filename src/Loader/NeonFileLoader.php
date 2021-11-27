@@ -8,10 +8,7 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Assert\AssertionFailedException;
 use Nette\Neon\Neon;
-use Susina\ConfigBuilder\Assertion;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
 
 /**
  * YamlFileLoader loads configuration parameters from yaml file.

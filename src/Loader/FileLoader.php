@@ -8,10 +8,8 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Assert\AssertionFailedException;
 use Generator;
-use Susina\ConfigBuilder\Assertion;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Symfony\Component\Config\Loader\FileLoader as BaseFileLoader;
 
 /**
@@ -108,7 +106,7 @@ abstract class FileLoader extends BaseFileLoader
          * otherwise, it is replaced with the resolved string or number.
          */
         $onlyKey = null;
-        $replaced = preg_replace_callback('/%([^%\s]*+)%/', function ($match) use ($resolving, $value, &$onlyKey) {
+        $replaced = preg_replace_callback('/%([^%\s]*+)%/', function (array $match) use ($resolving, $value, &$onlyKey) {
             $key = $match[1];
             // skip %%
             if ($key === '') {
@@ -121,7 +119,7 @@ abstract class FileLoader extends BaseFileLoader
             }
 
             if (isset($resolving[$key])) {
-                throw new ConfigurationException("Circular reference detected for parameter '$key'.");
+                throw new ConfigurationBuilderException("Circular reference detected for parameter '$key'.");
             }
 
             if ($value === $match[0]) {
@@ -132,7 +130,9 @@ abstract class FileLoader extends BaseFileLoader
 
             $resolved = $this->get($key);
 
-            Assertion::intOrFloatOrString($resolved, 'A string value must be composed of strings and/or numbers.');
+            if (!(is_numeric($resolved) || is_string($resolved))) {
+                throw new ConfigurationBuilderException('A string value must be composed of strings and/or numbers.');
+            }
 
             $resolving[$key] = true;
             $resolved = (string)$resolved;
@@ -180,13 +180,15 @@ abstract class FileLoader extends BaseFileLoader
      * @param int|string $propertyKey The key, in the configuration values array, to return the respective value
      *
      * @return mixed
-     * @throws ConfigurationException|AssertionFailedException when non-existent key in configuration array
+     * @throws ConfigurationBuilderException when non-existent key in configuration array
      *
      */
     private function get(int|string $propertyKey): mixed
     {
         $value = $this->findValue($propertyKey, $this->config);
-        Assertion::true($value->valid(), "Parameter '$propertyKey' not found in configuration file.");
+        if (!$value->valid()) {
+            throw new ConfigurationBuilderException("Parameter '$propertyKey' not found in configuration file.");
+        }
 
         return $value->current();
     }
@@ -216,11 +218,9 @@ abstract class FileLoader extends BaseFileLoader
      *
      * @param string $value The value to parse
      *
-     * @throws ConfigurationException if the environment variable is not set
-     *
      * @return string|null
+     * @throws ConfigurationBuilderException if the environment variable is not set
      *
-     * @psalm-suppress FalsableReturnStatement If $envParam is false an exception is thrown
      */
     private function parseEnvironmentParams(string $value): ?string
     {
@@ -231,7 +231,9 @@ abstract class FileLoader extends BaseFileLoader
         $env = substr($value, 4);
         $envParam = getenv($env);
 
-        Assertion::notStrictlyFalse($envParam, "Environment variable '$env' is not defined.");
+        if ($envParam === false) {
+            throw new ConfigurationBuilderException("Environment variable '$env' is not defined.");
+        }
 
         return $envParam;
     }

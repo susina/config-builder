@@ -8,9 +8,8 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Assert\AssertionFailedException;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
-use Susina\ConfigBuilder\Exception\XmlParseException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 use Susina\ConfigBuilder\XmlToArrayConverter;
 
 /**
@@ -28,8 +27,8 @@ class XmlFileLoader extends FileLoader
      *
      * @return array
      *
-     * @throws AssertionFailedException|ConfigurationException
-     * @throws XmlParseException
+     * @throws ConfigurationBuilderException
+     * @throws XmlParseBuilderException
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
      */

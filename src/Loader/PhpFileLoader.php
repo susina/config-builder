@@ -8,9 +8,7 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Assert\AssertionFailedException;
-use Susina\ConfigBuilder\Assertion;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 
 /**
  * PhpFileLoader loads configuration values from a PHP file.
@@ -36,7 +34,7 @@ class PhpFileLoader extends FileLoader
      *
      *
      * @return array
-     * @throws AssertionFailedException|ConfigurationException
+     * @throws ConfigurationBuilderException
      *
      * @psalm-suppress UnresolvableInclude $path contains a path resolved by FileLocator
      */
@@ -50,7 +48,9 @@ class PhpFileLoader extends FileLoader
         $content = include $path;
         ob_end_clean();
 
-        Assertion::isArray($content, "The configuration file '$resource' has invalid content.");
+        if (!is_array($content)) {
+            throw new ConfigurationBuilderException("The configuration file '$resource' has invalid content.");
+        }
 
         return $this->resolveParams($content); //Resolve parameter placeholders (%name%)
     }

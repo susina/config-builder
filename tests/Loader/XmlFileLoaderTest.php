@@ -9,8 +9,8 @@
 namespace Susina\ConfigBuilder\Tests\Loader;
 
 use org\bovigo\vfs\vfsStream;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
-use Susina\ConfigBuilder\Exception\XmlParseException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\XmlFileLoader;
 use Susina\ConfigBuilder\Tests\TestCase;
@@ -60,7 +60,7 @@ XML;
 
     public function testXmlFileHasInvalidContent(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Invalid xml content');
 
         $content = <<<EOF
@@ -87,7 +87,7 @@ EOF;
      */
     public function testXmlFileNotReadableThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/notreadable.xml" was expected to be readable.');
 
         $content = <<< XML

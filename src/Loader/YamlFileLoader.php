@@ -8,9 +8,7 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Assert\AssertionFailedException;
-use Susina\ConfigBuilder\Assertion;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -29,7 +27,7 @@ class YamlFileLoader extends FileLoader
      *
      * @return array
      *
-     * @throws AssertionFailedException|ConfigurationException
+     * @throws ConfigurationBuilderException
      * @throws ParseException if something goes wrong in parsing file
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
@@ -42,7 +40,9 @@ class YamlFileLoader extends FileLoader
         if ($content === null) {
             return [];
         }
-        Assertion::isArray($content, 'Unable to parse the configuration file: wrong yaml content.');
+        if (!is_array($content)) {
+            throw new ConfigurationBuilderException('Unable to parse the configuration file: wrong yaml content.');
+        }
 
         return $this->resolveParams($content);
     }

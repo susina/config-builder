@@ -8,6 +8,7 @@
 
 namespace Susina\ConfigBuilder;
 
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Symfony\Component\Config\FileLocator as BaseFileLocator;
 
 class FileLocator extends BaseFileLocator
@@ -19,7 +20,16 @@ class FileLocator extends BaseFileLocator
             $output = [$output];
         }
 
-        array_map(fn ($element): bool => Assertion::readable($element), $output);
+        array_map(
+            function (string $element): string {
+                if (!is_readable($element)) {
+                    throw new ConfigurationBuilderException("Path \"$element\" was expected to be readable.");
+                }
+
+                return $element;
+            },
+            $output
+        );
 
         return $first ? $output[0] : $output;
     }

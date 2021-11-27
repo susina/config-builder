@@ -9,7 +9,7 @@
 namespace Susina\ConfigBuilder\Tests\Loader;
 
 use Susina\CodingStandard\Config;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\FileLoader;
 use Susina\ConfigBuilder\Tests\DataProviderTrait;
@@ -92,7 +92,7 @@ class FileLoaderTest extends TestCase
 
     public function testResolveThrowsExceptionIfInvalidPlaceholder(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Parameter 'baz' not found in configuration file.");
 
         $this->loader->resolveParams(['foo' => 'bar', '%baz%']);
@@ -100,7 +100,7 @@ class FileLoaderTest extends TestCase
 
     public function testResolveThrowsExceptionIfNonExistentParameter(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Parameter 'foobar' not found in configuration file.");
 
         $this->loader->resolveParams(['foo %foobar% bar']);
@@ -108,7 +108,7 @@ class FileLoaderTest extends TestCase
 
     public function testResolveThrowsRuntimeExceptionIfCircularReference(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Circular reference detected for parameter 'bar'.");
 
         $this->loader->resolveParams(['foo' => '%bar%', 'bar' => '%foobar%', 'foobar' => '%foo%']);
@@ -116,7 +116,7 @@ class FileLoaderTest extends TestCase
 
     public function testResolveThrowsRuntimeExceptionIfCircularReferenceMixed(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Circular reference detected for parameter 'bar'.");
 
         $this->loader->resolveParams(['foo' => 'a %bar%', 'bar' => 'a %foobar%', 'foobar' => 'a %foo%']);
@@ -182,7 +182,7 @@ class FileLoaderTest extends TestCase
 
     public function testNonExistentEnvironmentVariableThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Environment variable 'foo' is not defined.");
 
         putenv('home=myHome');
@@ -197,7 +197,7 @@ class FileLoaderTest extends TestCase
 
     public function testParameterIsNotStringOrNumber(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('A string value must be composed of strings and/or numbers.');
 
         $config = [

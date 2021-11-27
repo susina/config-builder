@@ -10,7 +10,7 @@ namespace Susina\ConfigBuilder\Tests\Loader;
 
 use org\bovigo\vfs\vfsStream;
 use Susina\CodingStandard\Config;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\IniFileLoader;
 use Susina\ConfigBuilder\Tests\TestCase;
@@ -56,7 +56,7 @@ EOF;
 
     public function testIniFileHasInvalidContent(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("The configuration file 'vfs://root/nonvalid.ini' has invalid content.");
 
         $content = <<<EOF
@@ -133,7 +133,7 @@ EOF;
 
     public function testInvalidSectionThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Invalid key \".foo\"");
 
         $content = <<<EOF
@@ -146,7 +146,7 @@ EOF;
 
     public function testInvalidParamThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Invalid key \"foo.\"");
 
         $content = <<<EOF
@@ -160,7 +160,7 @@ EOF;
 
     public function testAlreadyExistentParamThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage("Cannot create sub-key for \"foo\", as key already exists");
 
         $content = <<<EOF
@@ -188,7 +188,7 @@ EOF;
      */
     public function testIniFileNotReadableThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/notreadable.ini" was expected to be readable.');
 
         $content = <<<EOF

@@ -8,9 +8,7 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Assert\AssertionFailedException;
-use Susina\ConfigBuilder\Assertion;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 
 /**
  * IniFileLoader loads parameters from INI files.
@@ -50,15 +48,18 @@ class IniFileLoader extends FileLoader
      *
      * @return array  The configuration array
      *
-     * @throws AssertionFailedException|ConfigurationException
+     * @throws ConfigurationBuilderException
      */
     public function load(mixed $resource, ?string $type = null): array
     {
         /** @var string $file */
         $file = $this->getLocator()->locate($resource);
-        Assertion::readable($file);
         $ini = parse_ini_file($file, true, INI_SCANNER_RAW);
-        Assertion::notStrictlyFalse($ini, "The configuration file '$file' has invalid content.");
+
+        if ($ini === false) {
+            throw new ConfigurationBuilderException("The configuration file '$file' has invalid content.");
+        }
+
         $ini = $this->parse($ini); //Parse for nested sections
 
         return $this->resolveParams($ini); //Resolve parameter placeholders (%name%)
@@ -135,7 +136,7 @@ class IniFileLoader extends FileLoader
      * @param mixed $value
      * @param array  $config
      *
-     * @throws ConfigurationException
+     * @throws ConfigurationBuilderException
      */
     private function parseKey(string $key, mixed $value, array &$config): void
     {
@@ -143,7 +144,7 @@ class IniFileLoader extends FileLoader
             $pieces = explode($this->nestSeparator, $key, 2);
 
             if (!strlen($pieces[0]) || !strlen($pieces[1])) {
-                throw new ConfigurationException(sprintf('Invalid key "%s"', $key));
+                throw new ConfigurationBuilderException(sprintf('Invalid key "%s"', $key));
             } elseif (!isset($config[$pieces[0]])) {
                 if ($pieces[0] === '0' && !empty($config)) {
                     $config = [$pieces[0] => $config];
@@ -151,7 +152,7 @@ class IniFileLoader extends FileLoader
                     $config[$pieces[0]] = [];
                 }
             } elseif (!is_array($config[$pieces[0]])) {
-                throw new ConfigurationException(sprintf(
+                throw new ConfigurationBuilderException(sprintf(
                     'Cannot create sub-key for "%s", as key already exists',
                     $pieces[0]
                 ));

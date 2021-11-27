@@ -9,7 +9,7 @@
 namespace Susina\ConfigBuilder\Tests\Loader;
 
 use org\bovigo\vfs\vfsStream;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\JsonFileLoader;
 use Susina\ConfigBuilder\Tests\TestCase;
@@ -81,7 +81,7 @@ EOF;
      */
     public function testJsonFileNotReadableThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Path "vfs://root/notreadable.json" was expected to be readable.');
 
         $content = <<<EOF

@@ -9,8 +9,8 @@
 namespace Susina\ConfigBuilder\Tests;
 
 use org\bovigo\vfs\vfsStream;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
-use Susina\ConfigBuilder\Exception\XmlParseException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 use Susina\ConfigBuilder\XmlToArrayConverter;
 
 class XmlToArrayConverterTest extends TestCase
@@ -47,7 +47,7 @@ class XmlToArrayConverterTest extends TestCase
 
     public function testInvalidXmlThrowsException(): void
     {
-        $this->expectException(ConfigurationException::class);
+        $this->expectException(ConfigurationBuilderException::class);
         $this->expectExceptionMessage('Invalid xml content');
 
         $invalidXml = <<< INVALID_XML
@@ -60,7 +60,7 @@ INVALID_XML;
 
     public function testErrorInXmlThrowsException(): void
     {
-        $this->expectException(XmlParseException::class);
+        $this->expectException(XmlParseBuilderException::class);
         $this->expectExceptionMessage('An error occurred while parsing XML configuration file:');
 
         $xmlWithError = <<< XML
@@ -79,7 +79,7 @@ XML;
 
     public function testMultipleErrorsInXmlThrowsException(): void
     {
-        $this->expectException(XmlParseException::class);
+        $this->expectException(XmlParseBuilderException::class);
         $this->expectExceptionMessage('Some errors occurred while parsing XML configuration file:');
 
         $xmlWithErrors = <<< XML

@@ -8,10 +8,9 @@
 
 namespace Susina\ConfigBuilder;
 
-use Assert\AssertionFailedException;
 use IteratorAggregate;
 use SplFileInfo;
-use Susina\ConfigBuilder\Exception\ConfigurationException;
+use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Loader\IniFileLoader;
 use Susina\ConfigBuilder\Loader\JsonFileLoader;
 use Susina\ConfigBuilder\Loader\NeonFileLoader;
@@ -39,14 +38,14 @@ final class ConfigurationBuilder
     private array $directories = [];
 
     /**
-     * @var ConfigurationInterface The definition object to process the configuration parameters.
+     * @var ConfigurationInterface|null The definition object to process the configuration parameters.
      */
-    private ConfigurationInterface $definition;
+    private ?ConfigurationInterface $definition = null;
 
     /**
      * @var string The configuration class to build.
      */
-    private string $configurationClass;
+    private string $configurationClass = '';
 
     /**
      * @var string The name of the method to initialize the configuration object. If empty, the builder
@@ -121,7 +120,7 @@ final class ConfigurationBuilder
      * @param string|SplFileInfo ...$dirs
      *
      * @return $this
-     * @throws ConfigurationException|AssertionFailedException
+     * @throws ConfigurationBuilderException
      */
     public function addDirectory(string|SplFileInfo ...$dirs): self
     {
@@ -130,8 +129,12 @@ final class ConfigurationBuilder
             array_map(
                 function (string|SplFileInfo $dir): string {
                     $dirName = $dir instanceof SplFileInfo ? $dir->getPathname() : $dir;
-                    Assertion::directory($dirName);
-                    Assertion::readable($dirName);
+                    if (!is_dir($dirName)) {
+                        throw new ConfigurationBuilderException("Path \"$dirName\" was expected to be a directory.");
+                    }
+                    if (!is_readable($dirName)) {
+                        throw new ConfigurationBuilderException("Path \"$dirName\" was expected to be readable.");
+                    }
 
                     return $dirName;
                 },
@@ -150,7 +153,7 @@ final class ConfigurationBuilder
      * @param array|IteratorAggregate $dirs
      *
      * @return $this
-     * @throws AssertionFailedException|ConfigurationException
+     * @throws ConfigurationBuilderException
      */
     public function setDirectories(array|IteratorAggregate $dirs): self
     {
@@ -183,11 +186,13 @@ final class ConfigurationBuilder
      * @param string $configurationClass
      *
      * @return $this
-     * @throws AssertionFailedException|ConfigurationException
+     * @throws ConfigurationBuilderException
      */
     public function setConfigurationClass(string $configurationClass): self
     {
-        Assertion::classExists($configurationClass);
+        if (!class_exists($configurationClass)) {
+            throw new ConfigurationBuilderException("Class \"$configurationClass\" does not exist.");
+        }
         $this->configurationClass = $configurationClass;
 
         return $this;
@@ -239,12 +244,16 @@ final class ConfigurationBuilder
      * Set the cache directory or the CacheInterface object
      *
      * @return $this
-     * @throws ConfigurationException|AssertionFailedException
+     * @throws ConfigurationBuilderException
      */
     public function setCacheDirectory(string $cache): self
     {
-        Assertion::directory($cache);
-        Assertion::readable($cache);
+        if (!is_dir($cache)) {
+            throw new ConfigurationBuilderException("Path \"$cache\" was expected to be a directory.");
+        }
+        if (!is_readable($cache)) {
+            throw new ConfigurationBuilderException("Path \"$cache\" was expected to be readable.");
+        }
         $this->cacheDirectory = $cache;
 
         return $this;
@@ -284,6 +293,10 @@ final class ConfigurationBuilder
     {
         $processor = new Processor();
 
+        if ($this->definition === null) {
+            throw new ConfigurationBuilderException('No definition class. Please, set one via `setDefinition` method.');
+        }
+
         return $processor->processConfiguration(
             $this->definition,
             [$this->beforeParams, $this->loadParameters(), $this->afterParams]
@@ -295,6 +308,7 @@ final class ConfigurationBuilder
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns a string
      *                                         if the 3rd function argument is not set to false
+     * @psalm-suppress UnresolvableInclude
      */
     private function loadFromCache(): array
     {
