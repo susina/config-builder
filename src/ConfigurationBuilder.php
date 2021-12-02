@@ -259,9 +259,14 @@ final class ConfigurationBuilder
         return $this;
     }
 
+    /**
+     * Return a populated configuration object.
+     *
+     * @return object
+     */
     public function getConfiguration(): object
     {
-        $parameters = $this->cacheDirectory !== '' ? $this->loadFromCache() : $this->loadConfiguration();
+        $parameters = $this->getConfigurationArray();
 
         if ($this->initMethod === '') {
             return new $this->configurationClass($parameters);
@@ -271,6 +276,16 @@ final class ConfigurationBuilder
         $configuration->{$this->initMethod}($parameters);
 
         return $configuration;
+    }
+
+    /**
+     * Return the loaded and processed configuration parameters as an associative array.
+     *
+     * @return array
+     */
+    public function getConfigurationArray(): array
+    {
+        return $this->cacheDirectory !== '' ? $this->loadFromCache() : $this->loadConfiguration();
     }
 
     private function loadParameters(): array
