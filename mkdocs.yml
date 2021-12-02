@@ -14,8 +14,10 @@ copyright: 'Susina Configuration Builder is licensed under <a href="https://www.
 #Configuration
 theme:
   name: material
+  logo: assets/hammer-and-wrench.png
+  favicon: assets/hammer-and-wrench.png
   palette:
-    primary: green
+    primary: red
   features:
     - navigation.tabs
     - navigation.top
@@ -25,13 +27,17 @@ nav:
   - Documentation:
       - Installation: installation.md
       - Usage: usage.md
-      - Configuration: configuration.md
-  - About: about.md
+      - Reference: reference.md
+      - Complete example: example.md
+  - About:
+      - Contributing: contributing.md
+      - License: license.md
 
 markdown_extensions:
   - admonition
   - attr_list
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.inlinehilite
   - pymdownx.tabbed:
       alternate_style: true
