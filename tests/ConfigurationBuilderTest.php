@@ -44,7 +44,13 @@ class ConfigurationBuilderTest extends TestCase
         $files = $this->getProperty($builder, 'files');
 
         $this->assertCount(2, $files);
-        $this->assertEquals(['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon'], $files);
+        $this->assertEquals(
+            [
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon.dist',
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon'
+        ],
+            $files
+        );
     }
 
     public function testSetFiles(): void
@@ -72,7 +78,13 @@ class ConfigurationBuilderTest extends TestCase
         $files = $this->getProperty($builder, 'files');
 
         $this->assertCount(2, $files);
-        $this->assertEquals(['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon'], $files);
+        $this->assertEquals(
+            [
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon.dist',
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon'
+        ],
+            $files
+        );
     }
 
     public function testAddDirectory(): void
@@ -102,7 +114,13 @@ class ConfigurationBuilderTest extends TestCase
         $files = $this->getProperty($builder, 'directories');
 
         $this->assertCount(2, $files);
-        $this->assertEquals(['vfs://root/config', 'vfs://root/test_config'], $files);
+        $this->assertEquals(
+            [
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config',
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'test_config'
+        ],
+            $files
+        );
     }
 
     public function testAddNonExistentDirectoryThrowsException(): void
@@ -153,7 +171,12 @@ class ConfigurationBuilderTest extends TestCase
         $files = $this->getProperty($builder, 'directories');
 
         $this->assertCount(2, $files);
-        $this->assertEquals(['vfs://root/config', 'vfs://root/test_config'], $files);
+        $this->assertEquals(
+            [
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config',
+            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'test_config'],
+            $files
+        );
     }
 
     public function testSetDefinition(): void

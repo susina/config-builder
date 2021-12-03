@@ -9,7 +9,6 @@
 namespace Susina\ConfigBuilder\Tests\Loader;
 
 use org\bovigo\vfs\vfsStream;
-use Susina\CodingStandard\Config;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\IniFileLoader;
@@ -57,7 +56,7 @@ EOF;
     public function testIniFileHasInvalidContent(): void
     {
         $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage("The configuration file 'vfs://root/nonvalid.ini' has invalid content.");
+        $this->expectExceptionMessage("The configuration file 'vfs://root" . DIRECTORY_SEPARATOR . "nonvalid.ini' has invalid content.");
 
         $content = <<<EOF
 {not ini content}

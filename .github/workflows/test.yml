@@ -35,6 +35,8 @@ jobs:
         run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
       - name: Check coding standard
         run: composer cs:check
+        env:
+          PHP_CS_FIXER_IGNORE_ENV: true
       - name: Static analysis tool
         run: composer analytics
       - name: Test suite
