@@ -193,10 +193,11 @@ class ConfigurationBuilderTest extends TestCase
 
     public function testNotExistentCacheDirectoryThrowsException(): void
     {
+        $cacheDir = __DIR__ . DIRECTORY_SEPARATOR . 'fake_dir';
         $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('Path "/home/cristiano/Github/susina/config-builder/tests/fake_dir" was expected to be a directory.');
+        $this->expectExceptionMessage("Path \"$cacheDir\" was expected to be a directory.");
 
-        ConfigurationBuilder::create()->setCacheDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'fake_dir');
+        ConfigurationBuilder::create()->setCacheDirectory($cacheDir);
     }
 
     /**
