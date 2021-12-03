@@ -1,5 +1,10 @@
 # Configuration Builder
 
+![Tests](https://github.com/susina/config-builder/actions/workflows/test.yml/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/df031168e25a1206df64/maintainability)](https://codeclimate.com/github/susina/config-builder/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/df031168e25a1206df64/test_coverage)](https://codeclimate.com/github/susina/config-builder/test_coverage)
+![GitHub](https://img.shields.io/github/license/susina/config-builder)
+
 Susina Configuration Builder is a library to load parameters, from configuration files, and build configuration objects
 or arrays. It's based on [Symfony Config](https://symfony.com/doc/current/components/config.html) and 
 [Propel configuration sub-system](https://github.com/propelorm/Propel2/tree/master/src/Propel/Common/Config).
