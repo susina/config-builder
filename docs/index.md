@@ -1,7 +1,7 @@
 # Susina Configuration Builder
 
-Susina Configuration Builder is a library to load and build configuration.
-It's based on [Symfony Config](https://symfony.com/doc/current/components/config.html) and heavily inspired on
+Susina Configuration Builder is a library to load and build configuration objects or arrays.
+It's based on [Symfony Config](https://symfony.com/doc/current/components/config.html) and it's heavily inspired on
 [Propel configuration sub-system](https://github.com/propelorm/Propel2/tree/master/src/Propel/Common/Config).
 
 ---------------------------------
@@ -13,7 +13,7 @@ Building a configuration is a three-step process:
 3. return an array of cleaned parameters or a configuration object
 
 
-We ship loaders supporting the following file formats:
+We ship loaders for the following file formats:
 
 -  __.ini__
 -  __.json__ via PHP json extension
@@ -23,5 +23,4 @@ We ship loaders supporting the following file formats:
 -  __.yml__ via [Symfony Yaml](https://symfony.com/doc/current/components/yaml.html) component
 
 
-The Configuration Builder can populate any object whose constructor, or any other initialize method, takes an array
-as a parameter.
+The Configuration Builder can populate any object whose constructor, or any other initialize method, takes an array as a parameter.

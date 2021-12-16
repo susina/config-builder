@@ -1,4 +1,4 @@
-Install via composer:
+Install the library via composer:
 
 ```bash
 composer require susina/config-builder
