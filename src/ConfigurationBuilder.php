@@ -266,6 +266,12 @@ final class ConfigurationBuilder
      */
     public function getConfiguration(): object
     {
+        if ($this->configurationClass === '') {
+            throw new ConfigurationBuilderException(
+                'No configuration class to instantiate. Please, set it via `setConfigurationClass` method.'
+            );
+        }
+
         $parameters = $this->getConfigurationArray();
 
         if ($this->initMethod === '') {

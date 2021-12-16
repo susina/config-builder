@@ -236,4 +236,25 @@ class ConfigurationBuilderTest extends TestCase
 
         $this->assertEquals($cacheDir->url(), $this->getProperty($builder, 'cacheDirectory'));
     }
+
+    public function testGetConfigurationThrowsExceptionIfNoClassSet(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectDeprecationMessage('No configuration class to instantiate. Please, set it via `setConfigurationClass` method.');
+
+        ConfigurationBuilder::create()
+            ->getConfiguration()
+        ;
+    }
+
+    public function testNoDefinitionThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectDeprecationMessage('No definition class. Please, set one via `setDefinition` method.');
+
+        ConfigurationBuilder::create()
+            ->setConfigurationClass(ConfigurationConstructor::class)
+            ->getConfiguration()
+        ;
+    }
 }
