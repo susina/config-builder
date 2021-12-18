@@ -141,32 +141,37 @@ class IniFileLoader extends FileLoader
     private function parseKey(string $key, mixed $value, array &$config): void
     {
         if (str_contains($key, $this->nestSeparator)) {
-            $pieces = explode($this->nestSeparator, $key, 2);
-
-            if (!strlen($pieces[0]) || !strlen($pieces[1])) {
-                throw new ConfigurationBuilderException(sprintf('Invalid key "%s"', $key));
-            } elseif (!isset($config[$pieces[0]])) {
-                if ($pieces[0] === '0' && !empty($config)) {
-                    $config = [$pieces[0] => $config];
-                } else {
-                    $config[$pieces[0]] = [];
-                }
-            } elseif (!is_array($config[$pieces[0]])) {
-                throw new ConfigurationBuilderException(sprintf(
-                    'Cannot create sub-key for "%s", as key already exists',
-                    $pieces[0]
-                ));
-            }
-
-            $this->parseKey($pieces[1], $value, $config[$pieces[0]]);
-        } elseif (is_string($value) && in_array(strtolower($value), ["true", "false"])) {
-            $config[$key] = (strtolower($value) === "true");
-        } elseif ($value === (string)(int) $value) {
-            $config[$key] = (int) $value;
-        } elseif ($value === (string)(float) $value) {
-            $config[$key] = (float) $value;
+            $this->parseNested($key, $value, $config);
         } else {
-            $config[$key] = $value;
+            $config[$key] = match ($value) {
+                'true', 'True', 'TRUE', 'false', 'False', 'FALSE' => $config[$key] = (strtolower($value) === "true"),
+                (string)(int) $value => (int) $value,
+                (string)(float) $value => (float) $value,
+                default => $value
+            };
         }
+    }
+
+    private function parseNested(string $key, mixed $value, array &$config): void
+    {
+        if (str_starts_with($key, '.') || str_ends_with($key, '.')) {
+            throw new ConfigurationBuilderException("Invalid key \"$key\"");
+        }
+
+        $pieces = explode($this->nestSeparator, $key, 2);
+
+        if (!isset($config[$pieces[0]])) {
+            if ($pieces[0] === '0' && !empty($config)) {
+                $config = [$pieces[0] => $config];
+            } else {
+                $config[$pieces[0]] = [];
+            }
+        }
+
+        if (!is_array($config[$pieces[0]])) {
+            throw new ConfigurationBuilderException("Cannot create sub-key for \"$pieces[0]\", as key already exists");
+        }
+
+        $this->parseKey($pieces[1], $value, $config[$pieces[0]]);
     }
 }

@@ -76,9 +76,7 @@ class XmlToArrayConverter
             $child = $this->simpleXmlToArray($v);
 
             // if it's not an array, then it was empty, thus a value/string
-            if ($child === []) {
-                $child = $this->getConvertedXmlValue($v);
-            }
+            $child = $child === [] ? $this->getConvertedXmlValue($v) : $child;
 
             // add the children attributes as if they where children
             foreach ($v->attributes() as $ak => $av) {
