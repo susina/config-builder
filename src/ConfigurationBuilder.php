@@ -294,6 +294,36 @@ final class ConfigurationBuilder
         return $this->cacheDirectory !== '' ? $this->loadFromCache() : $this->loadConfiguration();
     }
 
+    /**
+     * Populate a container object with the configuration values.
+     *
+     * @param object $container The container object
+     * @param string $method The container method to add a parameter
+     *                       (i.e. `set` for Php-Di or `setParameter` for Symfony Dependency Injection).
+     *
+     * @return void
+     */
+    public function populateContainer(object $container, string $method): void
+    {
+        $config = $this->getConfigurationArray();
+        $parameters = [];
+        $this->getDotArray($config, $parameters);
+
+        array_map([$container, $method], array_keys($parameters), array_values($parameters));
+    }
+
+    private function getDotArray(array $parameters, array &$output, string $keyAffix = ''): void
+    {
+        foreach ($parameters as $key => $value) {
+            $key = $keyAffix !== '' ? "$keyAffix.$key" : $key;
+            if (is_array($value)) {
+                $this->getDotArray($value, $output, $key);
+            } else {
+                $output[$key] = $value;
+            }
+        }
+    }
+
     private function loadParameters(): array
     {
         $fileLocator = new FileLocator($this->directories);

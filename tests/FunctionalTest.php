@@ -13,6 +13,7 @@ use Susina\ConfigBuilder\ConfigurationBuilder;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationInit;
+use Susina\ConfigBuilder\Tests\Fixtures\Container;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
 
 class FunctionalTest extends TestCase
@@ -175,6 +176,33 @@ class FunctionalTest extends TestCase
 
         $this->assertInstanceOf(ConfigurationConstructor::class, $config);
         $this->assertEquals(array_merge_recursive($this->getExpectedParameters(), $expected), $config->getParameters());
+    }
+
+    public function testPopulateContainer(): void
+    {
+        $expected = [
+            'auto_connect' => true,
+            'default_connection' => 'mysql',
+            'connections.mysql.host' => 'localhost',
+            'connections.mysql.driver' => 'mysql',
+            'connections.mysql.username' => 'user',
+            'connections.mysql.password' => 'pass',
+            'connections.sqlite.host' => 'localhost',
+            'connections.sqlite.driver' => 'sqlite',
+            'connections.sqlite.username' => 'user',
+            'connections.sqlite.password' => 'pass'
+        ];
+
+        $container = new Container();
+
+        ConfigurationBuilder::create()
+            ->addFile('database_config.yml')
+            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->setDefinition(new DatabaseConfiguration())
+            ->populateContainer($container, 'set')
+        ;
+
+        $this->assertEquals($expected, $container->getParameters());
     }
 
     private function getExpectedParameters(): array
