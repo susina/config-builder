@@ -212,3 +212,11 @@ Note that the value of this parameters _could overwrite_ the ones loaded from th
     `#!php-inline public function setCacheDirectory(string $cache): self`
 
 Set the directory where to save the cache files (see [Cache](usage.md#cache)).
+
+## populateContainer
+
+!!! example "Signature"
+`#!php-inline public function populateContainer(object $container, string $method): void`
+
+Populate a dependency injection container `$container` with the loaded configuration parameters.
+You can retrieve each parameter with a _dot acces_ key (i.e. database.connection.dsn).

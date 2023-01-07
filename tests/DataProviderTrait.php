@@ -130,6 +130,16 @@ EOF;
 </config>
 EOF;
 
+        $namedXml = <<<EOF
+<config>
+    <database name="TestDb">
+        <table name="table1"></table>
+        <table name="table2"></table>
+    </database>
+</config>
+EOF;
+
+
         return [
             [
                 $moviesXml,
@@ -151,7 +161,18 @@ EOF;
                             'name' => 'bookstore',
                         ],
                     ],
-                ]],
+                ]]
+            ],
+            [
+                $namedXml, [
+                    'database' => [
+                        'name' => 'TestDb',
+                        'table' => [
+                            0 => ['name' => 'table1'],
+                            1 => ['name' => 'table2']
+                        ]
+                    ]
+                ]
             ]
         ];
     }
