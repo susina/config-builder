@@ -6,19 +6,21 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Loader;
+namespace Susina\ConfigBuilder\Tests\Unit\Loader;
 
 use Nette\Neon\Exception;
-use Nette\Neon\Neon;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\NeonFileLoader;
-use Susina\ConfigBuilder\Tests\TestCase;
+use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
 class NeonFileLoaderTest extends TestCase
 {
+    use VfsTrait;
+
     protected NeonFileLoader $loader;
 
     protected function setUp(): void

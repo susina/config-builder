@@ -6,23 +6,27 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests;
+namespace Susina\ConfigBuilder\Tests\Functional;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\ConfigurationBuilder;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationInit;
 use Susina\ConfigBuilder\Tests\Fixtures\Container;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
+use Susina\ConfigBuilder\Tests\VfsTrait;
 
 class FunctionalTest extends TestCase
 {
+    use VfsTrait;
+
     public function testGetConfiguration(): void
     {
         $config = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->setDefinition(new DatabaseConfiguration())
             ->getConfiguration()
@@ -38,7 +42,7 @@ class FunctionalTest extends TestCase
         $this->expectExceptionMessage('No definition class. Please, set one via `setDefinition` method.');
         ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->getConfiguration()
         ;
@@ -48,7 +52,7 @@ class FunctionalTest extends TestCase
     {
         $config = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationInit::class)
             ->setInitMethod('initialize')
             ->setDefinition(new DatabaseConfiguration())
@@ -64,7 +68,7 @@ class FunctionalTest extends TestCase
         $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
         $config = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->setDefinition(new DatabaseConfiguration())
             ->setCacheDirectory($cacheDir->url())
@@ -83,7 +87,7 @@ class FunctionalTest extends TestCase
 
         $builder = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->setDefinition(new DatabaseConfiguration())
             ->setCacheDirectory($cacheDir->url())
@@ -111,7 +115,7 @@ class FunctionalTest extends TestCase
 
         $builder = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->setDefinition(new DatabaseConfiguration())
             ->setCacheDirectory($cacheDir->url());
@@ -136,7 +140,7 @@ class FunctionalTest extends TestCase
     {
         $config = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->setDefinition(new DatabaseConfiguration())
             ->setBeforeParams(['connections' => [
@@ -167,7 +171,7 @@ class FunctionalTest extends TestCase
 
         $config = ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setConfigurationClass(ConfigurationConstructor::class)
             ->setDefinition(new DatabaseConfiguration())
             ->setAfterParams($expected)
@@ -197,7 +201,7 @@ class FunctionalTest extends TestCase
 
         ConfigurationBuilder::create()
             ->addFile('database_config.yml')
-            ->addDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures')
+            ->addDirectory(fixtures_dir())
             ->setDefinition(new DatabaseConfiguration())
             ->populateContainer($container, 'set')
         ;

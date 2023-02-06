@@ -6,18 +6,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Loader;
+namespace Susina\ConfigBuilder\Tests\Unit\Loader;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
-use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\XmlFileLoader;
-use Susina\ConfigBuilder\Tests\TestCase;
+use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
 class XmlFileLoaderTest extends TestCase
 {
+    use VfsTrait;
+
     protected XmlFileLoader $loader;
 
     protected function setUp(): void

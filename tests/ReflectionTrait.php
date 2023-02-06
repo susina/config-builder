@@ -12,6 +12,9 @@ use Susina\ConfigBuilder\ConfigurationBuilder;
 
 trait ReflectionTrait
 {
+    /**
+     * @throws \ReflectionException
+     */
     public function getProperty(ConfigurationBuilder $builder, string $name): mixed
     {
         $class = new \ReflectionObject($builder);

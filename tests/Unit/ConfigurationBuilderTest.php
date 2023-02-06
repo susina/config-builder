@@ -6,18 +6,21 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests;
+namespace Susina\ConfigBuilder\Tests\Unit;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\ConfigurationBuilder;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
+use Susina\ConfigBuilder\Tests\ReflectionTrait;
+use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Finder\Finder;
 
 class ConfigurationBuilderTest extends TestCase
 {
-    use ReflectionTrait;
+    use ReflectionTrait, VfsTrait;
 
     public function testAddFile(): void
     {
@@ -240,7 +243,7 @@ class ConfigurationBuilderTest extends TestCase
     public function testGetConfigurationThrowsExceptionIfNoClassSet(): void
     {
         $this->expectException(ConfigurationBuilderException::class);
-        $this->expectDeprecationMessage('No configuration class to instantiate. Please, set it via `setConfigurationClass` method.');
+        $this->expectExceptionMessage('No configuration class to instantiate. Please, set it via `setConfigurationClass` method.');
 
         ConfigurationBuilder::create()
             ->getConfiguration()
@@ -250,7 +253,7 @@ class ConfigurationBuilderTest extends TestCase
     public function testNoDefinitionThrowsException(): void
     {
         $this->expectException(ConfigurationBuilderException::class);
-        $this->expectDeprecationMessage('No definition class. Please, set one via `setDefinition` method.');
+        $this->expectExceptionMessage('No definition class. Please, set one via `setDefinition` method.');
 
         ConfigurationBuilder::create()
             ->setConfigurationClass(ConfigurationConstructor::class)
