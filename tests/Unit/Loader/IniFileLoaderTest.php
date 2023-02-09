@@ -17,7 +17,7 @@ beforeEach(function () {
     $this->loader = new IniFileLoader(new FileLocator($this->getRoot()->url()));
 });
 
-test('Supported `ini` extensions', function() {
+test('Supported `ini` extensions', function () {
     expect($this->loader->supports('foo.ini'))->toBeTrue()
         ->and($this->loader->supports('foo.ini.dist'))->toBeTrue()
         ->and($this->loader->supports('foo.foo'))->toBeFalse()
@@ -25,7 +25,7 @@ test('Supported `ini` extensions', function() {
     ;
 });
 
-test('Load ini file', function() {
+test('Load ini file', function () {
     $content = <<<EOF
 ;test ini
 foo = bar
@@ -39,11 +39,11 @@ EOF;
     ;
 });
 
-test('Ini file does not exist', function() {
+test('Ini file does not exist', function () {
     $this->loader->load('inexistent.ini');
 })->throws(FileLocatorFileNotFoundException::class, "The file \"inexistent.ini\" does not exist (in");
 
-test('Ini invalid content', function() {
+test('Ini invalid content', function () {
     $content = <<<EOF
 {not ini content}
 only plain
@@ -53,14 +53,14 @@ EOF;
     @$this->loader->load('nonvalid.ini');
 })->throws(ConfigurationBuilderException::class, "The configuration file 'vfs://root" . DIRECTORY_SEPARATOR . "nonvalid.ini' has invalid content.");
 
-test('Empty ini file', function() {
+test('Empty ini file', function () {
     vfsStream::newFile('empty.ini')->at($this->getRoot())->setContent('');
     $actual = $this->loader->load('empty.ini');
 
     expect($actual)->toBe([]);
 });
 
-test('Ini sections', function() {
+test('Ini sections', function () {
     $content = <<<EOF
 [Cartoons]
 Dog          = Pluto
@@ -80,7 +80,7 @@ EOF;
     ;
 });
 
-test('Nested ini sections', function() {
+test('Nested ini sections', function () {
     $content = <<<EOF
 foo.bar.baz   = foobar
 foo.bar.babaz = foobabar
@@ -95,10 +95,9 @@ EOF;
         ->and($actual['bla']['foo'])->toBe('blafoo')
         ->and($actual['bla']['bar'])->toBe('blabar')
     ;
-
 });
 
-test('Mixed nested ini sections', function() {
+test('Mixed nested ini sections', function () {
     $content = <<<EOF
 bla.foo.bar = foobar
 bla.foobar[] = foobarArray
@@ -116,7 +115,7 @@ EOF;
     ;
 });
 
-test('Invalid section', function() {
+test('Invalid section', function () {
     $content = <<<EOF
 .foo = bar
 bar = baz
@@ -125,7 +124,7 @@ EOF;
     $this->loader->load('parameters.ini');
 })->throws(ConfigurationBuilderException::class, "Invalid key \".foo\"");
 
-test('Inavlid parameter', function() {
+test('Inavlid parameter', function () {
     $content = <<<EOF
 foo. = bar
 bar = baz
@@ -134,7 +133,7 @@ EOF;
     $test = $this->loader->load('parameters.ini');
 })->throws(ConfigurationBuilderException::class, "Invalid key \"foo.\"");
 
-test('Param already defined', function() {
+test('Param already defined', function () {
     $content = <<<EOF
 foo = bar
 foo.babar = baz
@@ -143,7 +142,7 @@ EOF;
     $test = $this->loader->load('parameters.ini');
 })->throws(ConfigurationBuilderException::class, "Cannot create sub-key for \"foo\", as key already exists");
 
-test('Section 0', function() {
+test('Section 0', function () {
     $content = <<<EOF
 foo = bar
 0.babar = baz
@@ -153,7 +152,7 @@ EOF;
     expect($this->loader->load('parameters.ini'))->toBe(['0' => ['foo' => 'bar', 'babar' => 'baz']]);
 });
 
-test('Ini file not readable', function() {
+test('Ini file not readable', function () {
     $content = <<<EOF
 foo = bar
 bar = baz
@@ -163,7 +162,7 @@ EOF;
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.ini" was expected to be readable.')
     ->skip(running_on_windows(), "Not executable on Windows");
 
-test('Transform string into boolean', function() {
+test('Transform string into boolean', function () {
     $content = <<<EOF
 ;test ini
 foo = true
@@ -179,7 +178,7 @@ EOF;
     ;
 });
 
-test('Tranform string into integer or float', function() {
+test('Tranform string into integer or float', function () {
     $content = <<<EOF
 ;test ini
 foo = 1

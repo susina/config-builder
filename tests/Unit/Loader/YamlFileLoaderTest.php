@@ -12,11 +12,11 @@ use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\YamlFileLoader;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
-beforeEach(function() {
+beforeEach(function () {
     $this->loader = new YamlFileLoader(new FileLocator($this->getRoot()->url()));
 });
 
-test("Supported yaml files", function() {
+test("Supported yaml files", function () {
     expect($this->loader->supports('foo.yaml'))->toBeTrue()
         ->and($this->loader->supports('foo.yml'))->toBeTrue()
         ->and($this->loader->supports('foo.yaml.dist'))->toBeTrue()
@@ -26,7 +26,7 @@ test("Supported yaml files", function() {
     ;
 });
 
-test("Load yaml file", function() {
+test("Load yaml file", function () {
     $content = <<<EOF
 #test ini
 foo: bar
@@ -39,11 +39,11 @@ EOF;
         ->and($test['bar'])->toBe('baz');
 });
 
-test("Non existent yaml file", function() {
+test("Non existent yaml file", function () {
     $this->loader->load('inexistent.yaml');
 })->throws(FileLocatorFileNotFoundException::class, 'The file "inexistent.yaml" does not exist (in: "vfs://root").');
 
-test("Invalid yaml content", function() {
+test("Invalid yaml content", function () {
     $content = <<<EOF
 not yaml content
 only plain
@@ -53,14 +53,14 @@ EOF;
     $this->loader->load('invalid.yaml');
 })->throws(ConfigurationBuilderException::class, 'Unable to parse the configuration file: wrong yaml content.');
 
-test("Empty yaml file", function() {
+test("Empty yaml file", function () {
     vfsStream::newFile('empty.yaml')->at($this->getRoot())->setContent('');
     $actual = $this->loader->load('empty.yaml');
 
     expect($actual)->toBe([]);
 });
 
-test("Yaml file not readable", function() {
+test("Yaml file not readable", function () {
     $content = <<<EOF
 foo: bar
 bar: baz

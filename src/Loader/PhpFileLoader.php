@@ -40,7 +40,13 @@ class PhpFileLoader extends FileLoader
      */
     public function load(mixed $resource, ?string $type = null): array
     {
+        /** @var string $path */
         $path = $this->getLocator()->locate($resource);
+
+        //empty file must return []
+        if (file_get_contents($path) === '') {
+            return [];
+        }
 
         //Use output buffering because in case $file contains invalid non-php content (i.e. plain text), include() function
         //write it on stdoutput
@@ -64,7 +70,7 @@ class PhpFileLoader extends FileLoader
      *
      * @return bool true if this class supports the given resource, false otherwise
      */
-    public function supports($resource, $type = null): bool
+    public function supports(mixed $resource, $type = null): bool
     {
         return str_ends_with((string)$resource, '.php') || str_ends_with((string)$resource, '.php.dist');
     }

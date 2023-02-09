@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -12,7 +12,7 @@
 
 use Susina\ConfigBuilder\Tests\VfsTrait;
 
-uses(VfsTrait::class)->in('Unit');
+uses(VfsTrait::class)->in('Unit', 'Functional');
 
 /**
  * Return true if PHP is running on Windows operating system

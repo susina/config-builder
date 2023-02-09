@@ -6,256 +6,215 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Functional;
-
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\ConfigurationBuilder;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationInit;
 use Susina\ConfigBuilder\Tests\Fixtures\Container;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
-use Susina\ConfigBuilder\Tests\VfsTrait;
 
-class FunctionalTest extends TestCase
-{
-    use VfsTrait;
+test('Get configuration', function (array $parameters) {
+    $config = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->getConfiguration()
+    ;
 
-    public function testGetConfiguration(): void
-    {
-        $config = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->setDefinition(new DatabaseConfiguration())
-            ->getConfiguration()
-        ;
+    expect($config)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and($config->getParameters())->toBe($parameters);
+})->with('Parameters');
 
-        $this->assertInstanceOf(ConfigurationConstructor::class, $config);
-        $this->assertEquals($this->getExpectedParameters(), $config->getParameters());
-    }
+test('Omit to set definition', function () {
+    ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->getConfiguration()
+    ;
+})->throws(ConfigurationBuilderException::class, 'No definition class. Please, set one via `setDefinition` method.');
 
-    public function testGetConfigurationWithoutSetDefinitionThrowsException(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('No definition class. Please, set one via `setDefinition` method.');
-        ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->getConfiguration()
-        ;
-    }
+test('Init methood', function (array $expectParams) {
+    $config = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationInit::class)
+        ->setInitMethod('initialize')
+        ->setDefinition(new DatabaseConfiguration())
+        ->getConfiguration()
+    ;
+    expect($config)->toBeInstanceOf(ConfigurationInit::class)
+        ->and($config->getParameters())->toBe($expectParams);
+})->with('Parameters');
 
-    public function testGetConfigurationWithInitMethod(): void
-    {
-        $config = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationInit::class)
-            ->setInitMethod('initialize')
-            ->setDefinition(new DatabaseConfiguration())
-            ->getConfiguration()
-        ;
+test('Cache parameters', function (array $expectParams) {
+    $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
+    $config = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setCacheDirectory($cacheDir->url())
+        ->getConfiguration()
+    ;
 
-        $this->assertInstanceOf(ConfigurationInit::class, $config);
-        $this->assertEquals($this->getExpectedParameters(), $config->getParameters());
-    }
+    expect($config)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and($config->getParameters())->toBe($expectParams)
+        ->and(vfsStream::url('root/cache_dir/susina_config_builder.cache'))->toBeFile()
+        ->and(include(vfsStream::url('root/cache_dir/susina_config_builder.cache')))->toBe($expectParams);
+})->with('Parameters');
 
-    public function testGetConfigurationByCache(): void
-    {
-        $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
-        $config = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->setDefinition(new DatabaseConfiguration())
-            ->setCacheDirectory($cacheDir->url())
-            ->getConfiguration()
-        ;
+test('Load from cache', function (array $expectParams) {
+    $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
+    $builder = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setCacheDirectory($cacheDir->url())
+    ;
 
-        $this->assertInstanceOf(ConfigurationConstructor::class, $config);
-        $this->assertEquals($this->getExpectedParameters(), $config->getParameters());
-        $this->assertFileExists(vfsStream::url('root/cache_dir/susina_config_builder.cache'));
-        $this->assertEquals($this->getExpectedParameters(), include(vfsStream::url('root/cache_dir/susina_config_builder.cache')));
-    }
+    //First call write the cache
+    $builder->getConfiguration();
+    expect(vfsStream::url('root/cache_dir/susina_config_builder.cache'))->toBeFile()
+        ->and(include(vfsStream::url('root/cache_dir/susina_config_builder.cache')))->toBe($expectParams);
 
-    public function testGetFromCache(): void
-    {
-        $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
+    //Modify the cache
+    file_put_contents(
+        vfsStream::url('root/cache_dir/susina_config_builder.cache'),
+        '<?php return ["Cache"];'
+    );
 
-        $builder = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->setDefinition(new DatabaseConfiguration())
-            ->setCacheDirectory($cacheDir->url())
-        ;
+    //second call load from cache
+    $config = $builder->getConfiguration();
+    expect($config)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and($config->getParameters())->toBe(['Cache']);
 
-        //First call write the cache
-        $builder->getConfiguration();
+    //New builder with same configuration loads from cache
+    $builder2 = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setCacheDirectory($cacheDir->url())
+    ;
+    $config2 = $builder2->getConfiguration();
+    expect($config2)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and($config2->getParameters())->toBe(['Cache']);
+})->with('Parameters');
 
-        $this->assertFileExists(vfsStream::url('root/cache_dir/susina_config_builder.cache'));
-        $this->assertEquals($this->getExpectedParameters(), include(vfsStream::url('root/cache_dir/susina_config_builder.cache')));
+test('Changing builder setup rebuild cache', function (array $expectParams, array $additionalParams) {
+    $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
+    $builder = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setCacheDirectory($cacheDir->url());
+    $config = $builder->getConfiguration();
+    expect($config)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and(vfsStream::url('root/cache_dir/susina_config_builder.cache'))->toBeFile()
+        ->and(include(vfsStream::url('root/cache_dir/susina_config_builder.cache')))->toBe($expectParams);
 
-        file_put_contents(
-            vfsStream::url('root/cache_dir/susina_config_builder.cache'),
-            '<?php return ["Cache"];'
-        );
+    $builder->setFiles(['database_config.neon']);
+    $config1 = $builder->getConfiguration();
+    expect(include(vfsStream::url('root/cache_dir/susina_config_builder.cache')))->toBe($additionalParams);
+})->with('AdditionalParameters');
 
-        $config = $builder->getConfiguration();
-        $this->assertInstanceOf(ConfigurationConstructor::class, $config);
-        $this->assertEquals(['Cache'], $config->getParameters());
-    }
-
-    public function testChangingBuilderRebuildCache(): void
-    {
-        $cacheDir = vfsStream::newDirectory('cache_dir')->at($this->getRoot());
-
-        $builder = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->setDefinition(new DatabaseConfiguration())
-            ->setCacheDirectory($cacheDir->url());
-
-        $config = $builder->getConfiguration();
-
-        $this->assertInstanceOf(ConfigurationConstructor::class, $config);
-        $this->assertFileExists(vfsStream::url('root/cache_dir/susina_config_builder.cache'));
-        $this->assertEquals($this->getExpectedParameters(), include(vfsStream::url('root/cache_dir/susina_config_builder.cache')));
-
-        $builder->setFiles(['database_config.neon']);
-
-        $config1 = $builder->getConfiguration();
-
-        $this->assertEquals(
-            $this->getExpectedAdditionalParameters(),
-            include(vfsStream::url('root/cache_dir/susina_config_builder.cache'))
-        );
-    }
-
-    public function testBeforeParameters(): void
-    {
-        $config = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->setDefinition(new DatabaseConfiguration())
-            ->setBeforeParams(['connections' => [
-                'pgsql' => [
-                    'host' => 'localhost',
-                    'driver' => 'postgresql',
-                    'username' => 'user',
-                    'password' => 'pass'
-                ]
-            ]])
-            ->getConfiguration()
-        ;
-
-        $this->assertInstanceOf(ConfigurationConstructor::class, $config);
-        $this->assertEquals($this->getExpectedAdditionalParameters(), $config->getParameters());
-    }
-
-    public function testAfterParameters(): void
-    {
-        $expected = ['connections' => [
-            'oracle' => [
+test('Before params', function () {
+    $expected = [
+        'connections' => [
+            'pgsql' => [
                 'host' => 'localhost',
-                'driver' => 'oracle',
+                'driver' => 'postgresql',
+                'username' => 'user',
+                'password' => 'pass'
+            ],
+            'mysql' => [
+                'host' => 'localhost',
+                'driver' => 'mysql',
+                'username' => 'user',
+                'password' => 'pass'
+            ],
+            'sqlite' => [
+                'host' => 'localhost',
+                'driver' => 'sqlite',
                 'username' => 'user',
                 'password' => 'pass'
             ]
-        ]];
+        ],
+        'auto_connect' => true,
+        'default_connection' => 'mysql'
+    ];
 
-        $config = ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setConfigurationClass(ConfigurationConstructor::class)
-            ->setDefinition(new DatabaseConfiguration())
-            ->setAfterParams($expected)
-            ->getConfiguration()
-        ;
-
-        $this->assertInstanceOf(ConfigurationConstructor::class, $config);
-        $this->assertEquals(array_merge_recursive($this->getExpectedParameters(), $expected), $config->getParameters());
-    }
-
-    public function testPopulateContainer(): void
-    {
-        $expected = [
-            'auto_connect' => true,
-            'default_connection' => 'mysql',
-            'connections.mysql.host' => 'localhost',
-            'connections.mysql.driver' => 'mysql',
-            'connections.mysql.username' => 'user',
-            'connections.mysql.password' => 'pass',
-            'connections.sqlite.host' => 'localhost',
-            'connections.sqlite.driver' => 'sqlite',
-            'connections.sqlite.username' => 'user',
-            'connections.sqlite.password' => 'pass'
-        ];
-
-        $container = new Container();
-
-        ConfigurationBuilder::create()
-            ->addFile('database_config.yml')
-            ->addDirectory(fixtures_dir())
-            ->setDefinition(new DatabaseConfiguration())
-            ->populateContainer($container, 'set')
-        ;
-
-        $this->assertEquals($expected, $container->getParameters());
-    }
-
-    private function getExpectedParameters(): array
-    {
-        return [
-            'auto_connect' => true,
-            'default_connection' => 'mysql',
-            'connections' => [
-                'mysql' => [
-                    'host' => 'localhost',
-                    'driver' => 'mysql',
-                    'username' => 'user',
-                    'password' => 'pass'
-                ],
-                'sqlite' => [
-                    'host' => 'localhost',
-                    'driver' => 'sqlite',
-                    'username' => 'user',
-                    'password' => 'pass'
-                ]
+    $config = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setBeforeParams(['connections' => [
+            'pgsql' => [
+                'host' => 'localhost',
+                'driver' => 'postgresql',
+                'username' => 'user',
+                'password' => 'pass'
             ]
-        ];
-    }
+        ]])
+        ->getConfiguration()
+    ;
 
-    private function getExpectedAdditionalParameters(): array
-    {
-        return [
-            'auto_connect' => true,
-            'default_connection' => 'mysql',
-            'connections' => [
-                'mysql' => [
-                    'host' => 'localhost',
-                    'driver' => 'mysql',
-                    'username' => 'user',
-                    'password' => 'pass'
-                ],
-                'sqlite' => [
-                    'host' => 'localhost',
-                    'driver' => 'sqlite',
-                    'username' => 'user',
-                    'password' => 'pass'
-                ],
-                'pgsql' => [
-                    'host' => 'localhost',
-                    'driver' => 'postgresql',
-                    'username' => 'user',
-                    'password' => 'pass'
-                ]
-            ]
-        ];
-    }
-}
+    expect($config)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and($config->getParameters())->toBe($expected);
+});
+
+test('After parameters', function (array $expectedParams) {
+    $after = ['connections' => [
+        'oracle' => [
+            'host' => 'localhost',
+            'driver' => 'oracle',
+            'username' => 'user',
+            'password' => 'pass'
+        ]
+    ]];
+    $expected = array_merge_recursive($expectedParams, $after);
+
+    $config = ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setAfterParams($after)
+        ->getConfiguration()
+    ;
+
+    expect($config)->toBeInstanceOf(ConfigurationConstructor::class)
+        ->and($config->getParameters())->toBe($expected);
+})->with('Parameters');
+
+test('Populate container', function () {
+    $expected = [
+        'auto_connect' => true,
+        'default_connection' => 'mysql',
+        'connections.mysql.host' => 'localhost',
+        'connections.mysql.driver' => 'mysql',
+        'connections.mysql.username' => 'user',
+        'connections.mysql.password' => 'pass',
+        'connections.sqlite.host' => 'localhost',
+        'connections.sqlite.driver' => 'sqlite',
+        'connections.sqlite.username' => 'user',
+        'connections.sqlite.password' => 'pass'
+    ];
+
+    $container = new Container();
+
+    ConfigurationBuilder::create()
+        ->addFile('database_config.yml')
+        ->addDirectory(fixtures_dir())
+        ->setDefinition(new DatabaseConfiguration())
+        ->populateContainer($container, 'set')
+    ;
+
+    expect($container->getParameters())->toBe($expected);
+});

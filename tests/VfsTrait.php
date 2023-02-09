@@ -11,7 +11,6 @@ namespace Susina\ConfigBuilder\Tests;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
-use PHPUnit\Framework\TestCase as BaseTestCase;
 
 trait VfsTrait
 {

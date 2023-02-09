@@ -6,100 +6,67 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Unit\Loader;
-
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\PhpFileLoader;
-use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
-class PhpFileLoaderTest extends TestCase
-{
-    use VfsTrait;
+beforeEach(function () {
+    $this->loader = new PhpFileLoader(new FileLocator($this->getRoot()->url()));
+});
 
-    protected PhpFileLoader $loader;
+test('Supported php extensions', function () {
+    expect($this->loader->supports('foo.php'))->toBeTrue()
+        ->and($this->loader->supports('foo.php.dist'))->toBeTrue()
+        ->and($this->loader->supports('foo.foo'))->toBeFalse()
+        ->and($this->loader->supports('foo.foo.dist'))->toBeFalse()
+    ;
+});
 
-    protected function setUp(): void
-    {
-        $this->loader = new PhpFileLoader(new FileLocator($this->getRoot()->url()));
-    }
-
-    public function testSupports(): void
-    {
-        $this->assertTrue($this->loader->supports('foo.php'), '->supports() returns true if the resource is loadable');
-        $this->assertTrue($this->loader->supports('foo.php.dist'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.foo'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.foo.dist'), '->supports() returns true if the resource is loadable');
-    }
-
-    public function testPhpFileCanBeLoaded(): void
-    {
-        $content = <<<EOF
+test('Load php file', function () {
+    $content = <<<EOF
 <?php
 
     return array('foo' => 'bar', 'bar' => 'baz');
 
 EOF;
-        vfsStream::newFile('parameters.php')->at($this->getRoot())->setContent($content);
-        $test = $this->loader->load('parameters.php');
-        $this->assertEquals('bar', $test['foo']);
-        $this->assertEquals('baz', $test['bar']);
-    }
+    vfsStream::newFile('parameters.php')->at($this->getRoot())->setContent($content);
+    $test = $this->loader->load('parameters.php');
 
-    public function testPhpFileDoesNotExist(): void
-    {
-        $this->expectException(FileLocatorFileNotFoundException::class);
-        $this->expectExceptionMessage('The file "inexistent.php" does not exist (in: "vfs://root").');
+    expect($test['foo'])->toBe('bar')
+        ->and($test['bar'])->toBe('baz');
+});
 
-        $this->loader->load('inexistent.php');
-    }
+test('Load not existent php file', function () {
+    $this->loader->load('inexistent.php');
+})->throws(FileLocatorFileNotFoundException::class, 'The file "inexistent.php" does not exist (in: "vfs://root").');
 
-    public function testPhpFileHasInvalidContent(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage("The configuration file 'nonvalid.php' has invalid content.");
-
-        $content = <<<EOF
+test('Load php file with invalid conten', function () {
+    $content = <<<EOF
 not php content
 only plain
 text
 EOF;
-        vfsStream::newFile('nonvalid.php')->at($this->getRoot())->setContent($content);
-        $this->loader->load('nonvalid.php');
-    }
+    vfsStream::newFile('nonvalid.php')->at($this->getRoot())->setContent($content);
+    $this->loader->load('nonvalid.php');
+})->throws(ConfigurationBuilderException::class, "The configuration file 'nonvalid.php' has invalid content.");
 
-    public function testPhpFileIsEmpty(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage("The configuration file 'empty.php' has invalid content.");
+test('Load empty php file', function () {
+    vfsStream::newFile('empty.php')->at($this->getRoot())->setContent('');
+    $actual = $this->loader->load('empty.php');
 
-        vfsStream::newFile('empty.php')->at($this->getRoot())->setContent('');
+    expect($actual)->toBe([]);
+});
 
-        $this->loader->load('empty.php');
-    }
-
-    /**
-     * @requires OS ^(?!Win.*)
-     */
-    public function testConfigFileNotReadableThrowsException(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('Path "vfs://root/notreadable.php" was expected to be readable.');
-
-        $content = <<<EOF
+test('Load not readable php file', function () {
+    $content = <<<EOF
 <?php
 
     return array('foo' => 'bar', 'bar' => 'baz');
 
 EOF;
-
-        vfsStream::newFile('notreadable.php', 200)->at($this->getRoot())->setContent($content);
-
-        $actual = $this->loader->load('notreadable.php');
-        $this->assertEquals('bar', $actual['foo']);
-        $this->assertEquals('baz', $actual['bar']);
-    }
-}
+    vfsStream::newFile('notreadable.php', 200)->at($this->getRoot())->setContent($content);
+    $this->loader->load('notreadable.php');
+})->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.php" was expected to be readable.')
+    ->skip(running_on_windows());

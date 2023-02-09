@@ -6,97 +6,64 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Unit\Loader;
-
 use Nette\Neon\Exception;
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\NeonFileLoader;
-use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
-class NeonFileLoaderTest extends TestCase
-{
-    use VfsTrait;
+beforeEach(function () {
+    $this->loader = new NeonFileLoader(new FileLocator($this->getRoot()->url()));
+});
 
-    protected NeonFileLoader $loader;
+test('Supported neon extensions', function () {
+    expect($this->loader->supports('foo.neon'))->toBeTrue()
+        ->and($this->loader->supports('foo.neon.dist'))->toBeTrue()
+        ->and($this->loader->supports('foo.bar'))->toBeFalse()
+        ->and($this->loader->supports('foo.bar.dist'))->toBeFalse()
+    ;
+});
 
-    protected function setUp(): void
-    {
-        $this->loader = new NeonFileLoader(new FileLocator($this->getRoot()->url()));
-    }
-
-    public function testSupports(): void
-    {
-        $this->assertTrue($this->loader->supports('foo.neon'), '->supports() returns true if the resource is loadable');
-        $this->assertTrue($this->loader->supports('foo.neon.dist'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.bar'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.bar.dist'), '->supports() returns true if the resource is loadable');
-    }
-
-    public function testNeonFileCanBeLoaded(): void
-    {
-        $content = <<<EOF
+test('Load neon file', function () {
+    $content = <<<EOF
 #test ini
 foo: bar
 bar: baz
 EOF;
-        vfsStream::newFile('parameters.neon')->at($this->getRoot())->setContent($content);
+    vfsStream::newFile('parameters.neon')->at($this->getRoot())->setContent($content);
+    $test = $this->loader->load('parameters.neon');
 
-        $test = $this->loader->load('parameters.neon');
-        $this->assertEquals('bar', $test['foo']);
-        $this->assertEquals('baz', $test['bar']);
-    }
+    expect($test['foo'])->toBe('bar')
+        ->and($test['bar'])->toBe('baz');
+});
 
-    public function testNeonFileDoesNotExist()
-    {
-        $this->expectException(FileLocatorFileNotFoundException::class);
-        $this->expectExceptionMessage('The file "inexistent.neon" does not exist (in: "vfs://root").');
+test('Load not existent neon file', function () {
+    $this->loader->load('inexistent.neon');
+})->throws(FileLocatorFileNotFoundException::class, 'The file "inexistent.neon" does not exist (in: "vfs://root").');
 
-        $this->loader->load('inexistent.neon');
-    }
-
-    public function testNeonFileHasInvalidContent()
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Unexpected 'only plain' on line 2, column 1.");
-
-        $content = <<<EOF
+test('Neon file with invalid content', function () {
+    $content = <<<EOF
 not neon content
 only plain
 text
 EOF;
-        vfsStream::newFile('nonvalid.neon')->at($this->getRoot())->setContent($content);
-        $this->loader->load('nonvalid.neon');
-    }
+    vfsStream::newFile('nonvalid.neon')->at($this->getRoot())->setContent($content);
+    $this->loader->load('nonvalid.neon');
+})->throws(Exception::class, "Unexpected 'only plain' on line 2, column 1.");
 
-    public function testNeonFileIsEmpty()
-    {
-        vfsStream::newFile('empty.neon')->at($this->getRoot())->setContent('');
+test('Empty neon file', function () {
+    vfsStream::newFile('empty.neon')->at($this->getRoot())->setContent('');
+    $actual = $this->loader->load('empty.neon');
+    expect($actual)->toBeEmpty();
+});
 
-        $actual = $this->loader->load('empty.neon');
-
-        $this->assertEquals([], $actual);
-    }
-
-    /**
-     * @requires OS ^(?!Win.*)
-     */
-    public function testNeonFileNotReadableThrowsException(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('Path "vfs://root/notreadable.neon" was expected to be readable.');
-
-        $content = <<<EOF
+test('Load not readable neon file', function () {
+    $content = <<<EOF
 foo: bar
 bar: baz
 EOF;
-        vfsStream::newFile('notreadable.neon', 200)->at($this->getRoot())->setContent($content);
-
-        $actual = $this->loader->load('notreadable.neon');
-        $this->assertEquals('bar', $actual['foo']);
-        $this->assertEquals('baz', $actual['bar']);
-    }
-}
+    vfsStream::newFile('notreadable.neon', 200)->at($this->getRoot())->setContent($content);
+    $actual = $this->loader->load('notreadable.neon');
+})->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.neon" was expected to be readable.')
+    ->skip(running_on_windows());

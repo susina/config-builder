@@ -6,103 +6,70 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Unit\Loader;
-
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\XmlFileLoader;
-use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
-class XmlFileLoaderTest extends TestCase
-{
-    use VfsTrait;
+beforeEach(function () {
+    $this->loader = new XmlFileLoader(new FileLocator($this->getRoot()->url()));
+});
 
-    protected XmlFileLoader $loader;
+test('Supported xml extensions', function () {
+    expect($this->loader->supports('foo.xml'))->toBeTrue()
+        ->and($this->loader->supports('foo.xml.dist'))->toBeTrue()
+        ->and($this->loader->supports('foo.yml.dist'))->toBeFalse()
+        ->and($this->loader->supports('foo.bar'))->toBeFalse()
+        ->and($this->loader->supports('foo.bar.dist'))->toBeFalse()
+    ;
+});
 
-    protected function setUp(): void
-    {
-        $this->loader = new XmlFileLoader(new FileLocator($this->getRoot()->url()));
-    }
-
-    public function testSupports(): void
-    {
-        $this->assertTrue($this->loader->supports('foo.xml'), '->supports() returns true if the resource is loadable');
-        $this->assertTrue($this->loader->supports('foo.xml.dist'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.yml.dist'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.bar'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.bar.dist'), '->supports() returns true if the resource is loadable');
-    }
-
-    public function testXmlFileCanBeLoaded(): void
-    {
-        $content = <<< XML
+test('Load xml file', function () {
+    $content = <<< XML
 <?xml version='1.0' standalone='yes'?>
 <properties>
   <foo>bar</foo>
   <bar>baz</bar>
 </properties>
 XML;
-        vfsStream::newFile('parameters.xml')->at($this->getRoot())->setContent($content);
+    vfsStream::newFile('parameters.xml')->at($this->getRoot())->setContent($content);
+    $test = $this->loader->load('parameters.xml');
 
-        $test = $this->loader->load('parameters.xml');
-        $this->assertEquals('bar', $test['foo']);
-        $this->assertEquals('baz', $test['bar']);
-    }
+    expect($test['foo'])->toBe('bar')
+        ->and($test['bar'])->toBe('baz');
+});
 
-    public function testXmlFileDoesNotExist(): void
-    {
-        $this->expectException(FileLocatorFileNotFoundException::class);
-        $this->expectExceptionMessage('The file "inexistent.xml" does not exist (in: "vfs://root").');
+test('Load not existent xml file', function () {
+    $this->loader->load('inexistent.xml');
+})->throws(FileLocatorFileNotFoundException::class, 'The file "inexistent.xml" does not exist (in: "vfs://root").');
 
-        $this->loader->load('inexistent.xml');
-    }
-
-    public function testXmlFileHasInvalidContent(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('Invalid xml content');
-
-        $content = <<<EOF
+test('Load xmlfile with invalid content', function () {
+    $content = <<<EOF
 not xml content
 only plain
 text
 EOF;
-        vfsStream::newFile('nonvalid.xml')->at($this->getRoot())->setContent($content);
+    vfsStream::newFile('nonvalid.xml')->at($this->getRoot())->setContent($content);
+    @$this->loader->load('nonvalid.xml');
+})->throws(ConfigurationBuilderException::class, 'Invalid xml content');
 
-        @$this->loader->load('nonvalid.xml');
-    }
+test('Empty xml file', function () {
+    vfsStream::newFile('empty.xml')->at($this->getRoot())->setContent('');
+    $actual = $this->loader->load('empty.xml');
 
-    public function testXmlFileIsEmpty()
-    {
-        vfsStream::newFile('empty.xml')->at($this->getRoot())->setContent('');
+    expect($actual)->toBe([]);
+});
 
-        $actual = $this->loader->load('empty.xml');
-
-        $this->assertEquals([], $actual);
-    }
-
-    /**
-     * @requires OS ^(?!Win.*)
-     */
-    public function testXmlFileNotReadableThrowsException(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('Path "vfs://root/notreadable.xml" was expected to be readable.');
-
-        $content = <<< XML
+test('Load not readable xml file', function () {
+    $content = <<< XML
 <?xml version='1.0' standalone='yes'?>
 <properties>
   <foo>bar</foo>
   <bar>baz</bar>
 </properties>
 XML;
-
-        vfsStream::newFile('notreadable.xml', 200)->at($this->getRoot())->setContent($content);
-        $actual = $this->loader->load('notreadable.xml');
-        $this->assertEquals('bar', $actual['foo']);
-        $this->assertEquals('baz', $actual['bar']);
-    }
-}
+    vfsStream::newFile('notreadable.xml', 200)->at($this->getRoot())->setContent($content);
+    $this->loader->load('notreadable.xml');
+})->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.xml" was expected to be readable.')
+    ->skip(running_on_windows());

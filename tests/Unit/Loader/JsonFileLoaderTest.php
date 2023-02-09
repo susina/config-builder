@@ -6,96 +6,67 @@
  * file that was distributed with this source code.
  */
 
-namespace Susina\ConfigBuilder\Tests\Unit\Loader;
-
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\TestCase;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\JsonFileLoader;
-use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
-class JsonFileLoaderTest extends TestCase
-{
-    use VfsTrait;
+beforeEach(function () {
+    $this->loader = new JsonFileLoader(new FileLocator($this->getRoot()->url()));
+});
 
-    protected JsonFileLoader $loader;
+test('Supported extensions', function () {
+    expect($this->loader->supports('foo.json'))->toBeTrue()
+        ->and($this->loader->supports('foo.json.dist'))->toBeTrue()
+        ->and($this->loader->supports('foo.bar'))->toBeFalse()
+        ->and($this->loader->supports('foo.bar.dist'))->toBeFalse()
+    ;
+});
 
-    protected function setUp(): void
-    {
-        $this->loader = new JsonFileLoader(new FileLocator($this->getRoot()->url()));
-    }
-
-    public function testSupports(): void
-    {
-        $this->assertTrue($this->loader->supports('foo.json'), '->supports() returns true if the resource is loadable');
-        $this->assertTrue($this->loader->supports('foo.json.dist'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.bar'), '->supports() returns true if the resource is loadable');
-        $this->assertFalse($this->loader->supports('foo.bar.dist'), '->supports() returns true if the resource is loadable');
-    }
-
-    public function testJsonFileCanBeLoaded(): void
-    {
-        $content = <<<EOF
+test('Load json file', function () {
+    $content = <<<EOF
 {
   "foo": "bar",
   "bar": "baz"
 }
 EOF;
-        vfsStream::newFile('parameters.json')->at($this->getRoot())->setContent($content);
-        $actual = $this->loader->load('parameters.json');
-        $this->assertEquals('bar', $actual['foo']);
-        $this->assertEquals('baz', $actual['bar']);
-    }
+    vfsStream::newFile('parameters.json')->at($this->getRoot())->setContent($content);
+    $actual = $this->loader->load('parameters.json');
 
-    public function testJsonFileDoesNotExist(): void
-    {
-        $this->expectException(FileLocatorFileNotFoundException::class);
-        $this->expectExceptionMessage('The file "inexistent.json" does not exist (in: "vfs://root").');
+    expect($actual['foo'])->toBe('bar')
+        ->and($actual['bar'])->toBe('baz');
+});
 
-        $this->loader->load('inexistent.json');
-    }
+test('Load not existent json file', function () {
+    $this->loader->load('inexistent.json');
+})->throws(FileLocatorFileNotFoundException::class, 'The file "inexistent.json" does not exist (in: "vfs://root").');
 
-    public function testJsonFileHasInvalidContent(): void
-    {
-        $this->expectException(\JsonException::class);
-        $this->expectExceptionMessage('Syntax error');
-
-        $content = <<<EOF
+test('Load file withinvalid content', function () {
+    $content = <<<EOF
 not json content
 only plain
 text
 EOF;
-        vfsStream::newFile('nonvalid.json')->at($this->getRoot())->setContent($content);
-        $this->loader->load('nonvalid.json');
-    }
+    vfsStream::newFile('nonvalid.json')->at($this->getRoot())->setContent($content);
+    $this->loader->load('nonvalid.json');
+})->throws(\JsonException::class, 'Syntax error');
 
-    public function testJsonFileIsEmpty(): void
-    {
-        vfsStream::newFile('empty.json')->at($this->getRoot())->setContent('');
-        $actual = $this->loader->load('empty.json');
+test('Empty json file', function () {
+    vfsStream::newFile('empty.json')->at($this->getRoot())->setContent('');
+    $actual = $this->loader->load('empty.json');
 
-        $this->assertEquals([], $actual);
-    }
+    expect($actual)->toBeEmpty();
+});
 
-    /**
-     * @requires OS ^(?!Win.*)
-     */
-    public function testJsonFileNotReadableThrowsException(): void
-    {
-        $this->expectException(ConfigurationBuilderException::class);
-        $this->expectExceptionMessage('Path "vfs://root/notreadable.json" was expected to be readable.');
-
-        $content = <<<EOF
+test('Load not readable file', function () {
+    $content = <<<EOF
 {
   "foo": "bar",
   "bar": "baz"
 }
 EOF;
-        vfsStream::newFile('notreadable.json', 200)->at($this->getRoot())->setContent($content);
-        $actual = $this->loader->load('notreadable.json');
-        $this->assertEquals('bar', $actual['foo']);
-        $this->assertEquals('baz', $actual['bar']);
-    }
-}
+    vfsStream::newFile('notreadable.json', 200)->at($this->getRoot())->setContent($content);
+    $actual = $this->loader->load('notreadable.json');
+})->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.json" was expected to be readable.')
+    ->skip(running_on_windows());

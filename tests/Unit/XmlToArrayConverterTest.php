@@ -11,23 +11,23 @@ use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 use Susina\ConfigBuilder\XmlToArrayConverter;
 
-beforeEach(function(){
+beforeEach(function () {
     $this->converter = new XmlToArrayConverter();
 });
 
-test('Convert xml', function(string $xml, array $expected) {
+test('Convert xml', function (string $xml, array $expected) {
     $actual = $this->converter->convert($xml);
     expect($actual)->toBe($expected);
 })->with('Xml');
 
-test('Convert xml with inclusion', function(string $xmlLoad, string $xmlInclude, array $expected) {
+test('Convert xml with inclusion', function (string $xmlLoad, string $xmlInclude, array $expected) {
     vfsStream::newFile('testconvert_include.xml')->at($this->getRoot())->setContent($xmlInclude);
     $actual = $this->converter->convert($xmlLoad);
 
     expect($actual)->toBe($expected);
 })->with('Inclusion');
 
-test('Invalid xml', function() {
+test('Invalid xml', function () {
     $invalidXml = <<< INVALID_XML
 No xml
 only plain text
@@ -36,7 +36,7 @@ INVALID_XML;
     $this->converter->convert($invalidXml);
 })->throws(ConfigurationBuilderException::class, 'Invalid xml content');
 
-test('Errorin xml content', function() {
+test('Errorin xml content', function () {
     $xmlWithError = <<< XML
 <?xml version='1.0' standalone='yes'?>
 <movies>
@@ -51,7 +51,7 @@ XML;
     $this->converter->convert($xmlWithError);
 })->throws(XmlParseBuilderException::class, 'An error occurred while parsing XML configuration file:');
 
-test('Multiple errors in xml', function(){
+test('Multiple errors in xml', function () {
     $xmlWithErrors = <<< XML
 <?xml version='1.0' standalone='yes'?>
 <movies>
@@ -66,7 +66,7 @@ XML;
     $this->converter->convert($xmlWithErrors);
 })->throws(XmlParseBuilderException::class, 'Some errors occurred while parsing XML configuration file:');
 
-test('Convert with Id', function(string $xml, array $expected) {
+test('Convert with Id', function (string $xml, array $expected) {
     $actual = $this->converter->convert($xml);
     expect($actual)->toBe($expected);
 })->with('TestId');

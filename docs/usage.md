@@ -67,7 +67,7 @@ This class should accept an array to the constructor or have an initialization m
 
 You can set up your configuration class via `setConfigurationClass` method and, if the class has an initialization method, you can use `setInitMethod`.
 
-Suppose that you want to use a [dflydev/dot-access-data](https://github.com/dflydev/dflydev-dot-access-data) as configuration class (`Dflydev\DotAccessData\Data` class accept an array of parameters to the constructor):
+Suppose you want to use a [dflydev/dot-access-data](https://github.com/dflydev/dflydev-dot-access-data) as configuration class (`Dflydev\DotAccessData\Data` class accept an array of parameters to the constructor):
 
 ```php 
 <?php declare(strict_types=1);
@@ -109,7 +109,7 @@ class ConfigManager {
 }
 ```
 
-You can set up the configuration builder to use the `init()` method, by calling `ConfigurationBuilder::setInitMethod)`:
+You can set up the configuration builder to use the `init()` method, by calling `ConfigurationBuilder::setInitMethod`:
 
 ```php
 <?php declare(strict_types=1);

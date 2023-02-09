@@ -10,11 +10,11 @@ use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\FileLoader;
 
-beforeEach(function() {
+beforeEach(function () {
     $this->loader = new TestableFileLoader(new FileLocator());
 });
 
-test('Resolve parameters', function() {
+test('Resolve parameters', function () {
     putenv('host=127.0.0.1');
     putenv('user=root');
 
@@ -61,11 +61,11 @@ test('Resolve parameters', function() {
     putenv('user');
 });
 
-test('Resolve values', function(array $conf, array $expected) {
+test('Resolve values', function (array $conf, array $expected) {
     expect($expected)->toBe($this->loader->resolveParams($conf));
 })->with('resolveParams');
 
-test('Replacing values are not cast to strings', function() {
+test('Replacing values are not cast to strings', function () {
     $conf = $this->loader->resolveParams(['foo' => true, 'expfoo' => '%foo%', 'bar' => null, 'expbar' => '%bar%']);
 
     expect($conf['expfoo'])->toBeTrue()->and($conf['expbar'])->toBeNull();
@@ -74,16 +74,16 @@ test('Replacing values are not cast to strings', function() {
 test('Invalid placeholder', fn () => $this->loader->resolveParams(['foo' => 'bar', '%baz%']))
     ->throws(ConfigurationBuilderException::class, "Parameter 'baz' not found in configuration file.");
 
-test('Non existent placeholder', fn() => $this->loader->resolveParams(['foo %foobar% bar']))
+test('Non existent placeholder', fn () => $this->loader->resolveParams(['foo %foobar% bar']))
     ->throws(ConfigurationBuilderException::class, "Parameter 'foobar' not found in configuration file.");
 
-test('Simple circular reference', fn() => $this->loader->resolveParams(['foo' => '%bar%', 'bar' => '%foobar%', 'foobar' => '%foo%']))
+test('Simple circular reference', fn () => $this->loader->resolveParams(['foo' => '%bar%', 'bar' => '%foobar%', 'foobar' => '%foo%']))
     ->throws(ConfigurationBuilderException::class, "Circular reference detected for parameter 'bar'.");
 
-test('Complex circular reference', fn() => $this->loader->resolveParams(['foo' => 'a %bar%', 'bar' => 'a %foobar%', 'foobar' => 'a %foo%']))
+test('Complex circular reference', fn () => $this->loader->resolveParams(['foo' => 'a %bar%', 'bar' => 'a %foobar%', 'foobar' => 'a %foo%']))
     ->throws(ConfigurationBuilderException::class, "Circular reference detected for parameter 'bar'.");
 
-test('Environment variable parameters', function() {
+test('Environment variable parameters', function () {
     putenv('home=myHome');
     putenv('schema=mySchema');
     putenv('isBoolean=true');
@@ -122,7 +122,7 @@ test('Environment variable parameters', function() {
     putenv('integer');
 });
 
-test('Resolve empty environment variable', function() {
+test('Resolve empty environment variable', function () {
     putenv('home=');
 
     $config = [
@@ -139,7 +139,7 @@ test('Resolve empty environment variable', function() {
     putenv('home');
 });
 
-test('Not existent environment variable', function() {
+test('Not existent environment variable', function () {
     putenv('home=myHome');
 
     $config = [
@@ -150,7 +150,7 @@ test('Not existent environment variable', function() {
     $this->loader->resolveParams($config);
 })->throws(ConfigurationBuilderException::class, "Environment variable 'foo' is not defined.");
 
-test('Parameter type is not string or number', function() {
+test('Parameter type is not string or number', function () {
     $config = [
         'foo' => 'a %bar%',
         'bar' => [],
@@ -160,7 +160,7 @@ test('Parameter type is not string or number', function() {
     $this->loader->resolveParams($config);
 })->throws(ConfigurationBuilderException::class, 'A string value must be composed of strings and/or numbers.');
 
-test('Resolve param twice', function() {
+test('Resolve param twice', function () {
     $config = [
         'foo' => 'bar',
         'baz' => '%foo%',
