@@ -12,21 +12,21 @@
 
 While developing, the test part is very important: if you apply a patch to the existing code, the test suite must run without errors or failures and if you add a new functionality, no one will consider it without tests.
 
-Our test tool is [PhpUnit](https://phpunit.de/) and we provide a script to launch it:
+Our test tool is [Pest](https://pestphp.com/) and we provide a script to launch it:
 
 ```bash
 composer test
 ```
-Since our command runs phpunit binary under the hood, you can pass all phpunit options to it via the `--` operator, i.e.:
+Since our command runs pest binary under the hood, you can pass all options to it via the `--` operator, i.e.:
 
 ```bash
 composer test -- --stop-on-failure
 ```
 
-You can also use phpunit directly:
+You can also use pest directly:
 
 ```bash
-vendor/bin/phpunit
+vendor/bin/pest
 ```
 
 ## Code Coverage
