@@ -28,7 +28,7 @@
         "ext-simplexml": "*",
         "ext-libxml": "*",
         "ext-dom": "*",
-        "phpunit/phpunit": "^9.5",
+        "pestphp/pest": "^1.22",
         "mikey179/vfsstream": "^1.6",
         "psalm/phar": "^4.8",
         "susina/coding-standard": "^2",
@@ -46,7 +46,7 @@
         "coverage:clover": "@test --coverage-clover clover.xml",
         "cs:check": "php-cs-fixer fix -v --diff --dry-run",
         "cs:fix": "php-cs-fixer fix -v --diff",
-        "test": "phpunit --colors=always"
+        "test": "pest"
     },
     "scripts-descriptions": {
         "analytics": "Run static analysis tool",
@@ -64,5 +64,10 @@
         "ext-simplexml": "Needed to load XML configuration files",
         "ext-dom": "Allows to include XML files into your XML configuration",
         "ext-libxml": "Needed to manipulate XML configuration files"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
