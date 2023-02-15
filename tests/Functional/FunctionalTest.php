@@ -13,6 +13,7 @@ use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationInit;
 use Susina\ConfigBuilder\Tests\Fixtures\Container;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
+use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfigurationWithFirstTag;
 
 test('Get configuration', function (array $parameters) {
     $config = ConfigurationBuilder::create()
@@ -217,4 +218,39 @@ test('Populate container', function () {
     ;
 
     expect($container->getParameters())->toBe($expected);
+});
+
+test('Keep first xml tag', function () {
+    $config = ConfigurationBuilder::create()
+        ->addFile('database_config.xml')
+        ->addDirectory(fixtures_dir())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfigurationWithFirstTag())
+        ->keepFirstXmlTag()
+        ->getConfigurationArray()
+    ;
+
+    expect($config)->toHaveKey('database')
+        ->and($config)->toBe(
+            [
+                'database' => [
+                    'auto_connect' => true,
+                    'default_connection' => 'mysql',
+                    'connections' => [
+                        'mysql' => [
+                            'host' => 'localhost',
+                            'driver' => 'mysql',
+                            'username' => 'user',
+                            'password' => 'pass'
+                        ],
+                        'sqlite' => [
+                            'host' => 'localhost',
+                            'driver' => 'sqlite',
+                            'username' => 'user',
+                            'password' => 'pass'
+                        ]
+                    ]
+                ]
+            ]
+        );
 });
