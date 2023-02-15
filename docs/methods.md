@@ -220,3 +220,42 @@ Set the directory where to save the cache files (see [Cache](usage.md#cache)).
 
 Populate a dependency injection container `$container` with the loaded configuration parameters.
 You can retrieve each parameter with a _dot acces_ key (i.e. database.connection.dsn).
+
+## keepFirstXmlTag
+
+!!! example "Signature"
+`#!php-inline public function keepFirstXmlTag(bool $keep = true): self`
+
+When loading XML files, keep the first xml tag as part of the configuration.
+
+Consider the following xml:
+
+```xml
+<?xml version='1.0' standalone='yes'?>
+<properties>
+  <foo>bar</foo>
+  <bar>baz</bar>
+</properties>
+```
+
+it usually results in the following array:
+
+```php
+<?php
+    [
+        'foo' => 'bar', 
+        'bar' => 'baz'
+    ];
+```
+
+If you call `keepFirstXmTag` then the resulted array is the following:
+
+```php
+<?php
+    [
+        'properties' => [
+            'foo' => 'bar', 
+            'bar' => 'baz'
+        ]
+    ];
+```

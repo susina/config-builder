@@ -66,6 +66,11 @@ final class ConfigurationBuilder
     private string $cacheDirectory = '';
 
     /**
+     * @var bool if keep the first xml tag in an xml configuration file
+     */
+    private bool $keepFirstXmlTag = false;
+
+    /**
      * Static constructor.
      *
      * @return static
@@ -260,6 +265,20 @@ final class ConfigurationBuilder
     }
 
     /**
+     * Keep also the first tag of a xml configuration.
+     *
+     * @param bool $keep
+     *
+     * @return $this
+     */
+    public function keepFirstXmlTag(bool $keep = true): self
+    {
+        $this->keepFirstXmlTag = $keep;
+
+        return $this;
+    }
+
+    /**
      * Return a populated configuration object.
      *
      * @return object
@@ -332,7 +351,7 @@ final class ConfigurationBuilder
             new JsonFileLoader($fileLocator),
             new NeonFileLoader($fileLocator),
             new PhpFileLoader($fileLocator),
-            new XmlFileLoader($fileLocator),
+            new XmlFileLoader($fileLocator, $this->keepFirstXmlTag),
             new YamlFileLoader($fileLocator)
         ]);
         $delegatingLoader = new DelegatingLoader($loaderResolver);

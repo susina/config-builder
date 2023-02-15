@@ -1,0 +1,18 @@
+<database>
+    <auto_connect>true</auto_connect>
+    <default_connection>mysql</default_connection>
+    <connections>
+        <mysql>
+            <host>localhost</host>
+            <driver>mysql</driver>
+            <username>user</username>
+            <password>pass</password>
+        </mysql>
+        <sqlite>
+            <host>localhost</host>
+            <driver>sqlite</driver>
+            <username>user</username>
+            <password>pass</password>
+        </sqlite>
+    </connections>
+</database>
