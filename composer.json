@@ -10,8 +10,9 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
-        "symfony/config": "^5.4|^6.0"
+        "php": ">=8.2",
+        "symfony/config": "^6.4|^7.0",
+        "susina/param-resolver": "^0.5.0"
     },
     "autoload": {
         "psr-4": {
@@ -29,11 +30,11 @@
         "ext-libxml": "*",
         "ext-dom": "*",
         "mikey179/vfsstream": "^1.6",
-        "psalm/phar": "^4.8",
         "susina/coding-standard": "^2",
-        "symfony/yaml": "^5.3|^6.0",
-        "nette/neon": "^3.3",
-        "pestphp/pest": "^1.22"
+        "symfony/yaml": "^6.4|^7.0",
+        "pestphp/pest": "^2",
+        "psalm/phar": "^5.25",
+        "nette/neon": "^3.4"
     },
     "scripts": {
         "analytics": "vendor/bin/psalm.phar",
@@ -42,6 +43,7 @@
             "@analytics",
             "@cs:fix"
         ],
+        "coverage": "@test --coverage",
         "coverage:html": "@test --coverage-html coverage/",
         "coverage:clover": "@test --coverage-clover clover.xml",
         "cs:check": "php-cs-fixer fix -v --diff --dry-run",
@@ -53,6 +55,7 @@
         "check": "Perform all tests and analysis, required before submitting a pull request",
         "cs:check": "Run code style analysis, without fixing errors",
         "cs:fix": "Run code style analysis and fix errors",
+        "coverage": "Show the coverage report",
         "coverage:html": "Create a code coverage report in html format, into the `coverage/` directory",
         "coverage:clover": "Create a code coverage report in xml format, into the `clover.xml` file",
         "test": "Run the test suite"

@@ -9,6 +9,8 @@
 namespace Susina\ConfigBuilder\Loader;
 
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ParamResolver\ParamResolver;
+use Symfony\Component\Config\Loader\FileLoader;
 
 /**
  * PhpFileLoader loads configuration values from a PHP file.
@@ -58,7 +60,7 @@ class PhpFileLoader extends FileLoader
             throw new ConfigurationBuilderException("The configuration file '$resource' has invalid content.");
         }
 
-        return $this->resolveParams($content); //Resolve parameter placeholders (%name%)
+        return ParamResolver::create()->resolve($content); //Resolve parameter placeholders (%name%)
     }
 
     /**

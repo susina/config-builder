@@ -8,6 +8,9 @@
 
 namespace Susina\ConfigBuilder\Loader;
 
+use Susina\ParamResolver\ParamResolver;
+use Symfony\Component\Config\Loader\FileLoader;
+
 /**
  * JsonFileLoader loads configuration parameters from json file.
  *
@@ -35,7 +38,7 @@ class JsonFileLoader extends FileLoader
 
         $content = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
-        return $this->resolveParams($content); //Resolve parameter placeholders (%name%)
+        return ParamResolver::create()->resolve($content); //Resolve parameter placeholders (%name%)
     }
 
     /**

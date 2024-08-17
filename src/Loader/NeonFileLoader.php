@@ -9,6 +9,8 @@
 namespace Susina\ConfigBuilder\Loader;
 
 use Nette\Neon\Neon;
+use Susina\ParamResolver\ParamResolver;
+use Symfony\Component\Config\Loader\FileLoader;
 
 /**
  * YamlFileLoader loads configuration parameters from yaml file.
@@ -31,7 +33,7 @@ class NeonFileLoader extends FileLoader
     {
         $content = Neon::decode(file_get_contents($this->getLocator()->locate($resource)));
 
-        return $content === null ? [] : $this->resolveParams($content);
+        return $content === null ? [] : ParamResolver::create()->resolve($content);
     }
 
     /**

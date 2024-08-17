@@ -9,6 +9,8 @@
 namespace Susina\ConfigBuilder\Loader;
 
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ParamResolver\ParamResolver;
+use Symfony\Component\Config\Loader\FileLoader;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -44,7 +46,7 @@ class YamlFileLoader extends FileLoader
             throw new ConfigurationBuilderException('Unable to parse the configuration file: wrong yaml content.');
         }
 
-        return $this->resolveParams($content);
+        return ParamResolver::create()->resolve($content);
     }
 
     /**

@@ -11,7 +11,9 @@ namespace Susina\ConfigBuilder\Loader;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
 use Susina\ConfigBuilder\XmlToArrayConverter;
+use Susina\ParamResolver\ParamResolver;
 use Symfony\Component\Config\FileLocatorInterface;
+use Symfony\Component\Config\Loader\FileLoader;
 
 /**
  * XmlFileLoader loads configuration parameters from xml file.
@@ -51,7 +53,7 @@ class XmlFileLoader extends FileLoader
 
         $content = $converter->convert($xml);
 
-        return $this->resolveParams($content); //Resolve parameter placeholders (%name%)
+        return ParamResolver::create()->resolve($content); //Resolve parameter placeholders (%name%)
     }
 
     /**
