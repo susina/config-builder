@@ -138,10 +138,11 @@ class IniFileLoader extends FileLoader
         if (str_contains($key, '.')) {
             $this->parseNested($key, $value, $config);
         } else {
-            $config[$key] = match ($value) {
-                'true', 'True', 'TRUE', 'false', 'False', 'FALSE' => $config[$key] = (strtolower($value) === "true"),
-                (string)(int) $value => (int) $value,
-                (string)(float) $value => (float) $value,
+            $config[$key] = match (true) {
+                is_string($value) && strtolower($value) === 'true' => true,
+                is_string($value) && strtolower($value) === 'false' => false,
+                (string)(int) $value === $value => (int) $value,
+                (string)(float) $value === $value => (float) $value,
                 default => $value
             };
         }
@@ -154,6 +155,10 @@ class IniFileLoader extends FileLoader
         }
 
         $pieces = explode('.', $key, 2);
+
+        if (count($pieces) !== 2) {
+            throw new ConfigurationBuilderException("Invalid key \"$key\"");
+        }
 
         if (!isset($config[$pieces[0]])) {
             if ($pieces[0] === '0' && !empty($config)) {
