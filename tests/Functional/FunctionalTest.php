@@ -249,7 +249,8 @@ test('Keep first xml tag', function () {
                             'username' => 'user',
                             'password' => 'pass'
                         ]
-                    ]
+                    ],
+                    'name' => 'database_test'
                 ]
             ]
         );

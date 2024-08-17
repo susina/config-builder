@@ -20,6 +20,7 @@ class DatabaseConfigurationWithFirstTag implements ConfigurationInterface
             ->children()
                 ->arrayNode('database')
                     ->children()
+                        ->scalarNode('name')->end()
                         ->booleanNode('auto_connect')->defaultTrue()->end()
                         ->scalarNode('default_connection')->defaultValue('default')->end()
                         ->arrayNode('connections')

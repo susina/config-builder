@@ -9,6 +9,8 @@
 namespace Susina\ConfigBuilder\Loader;
 
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
+use Susina\ParamResolver\ParamResolver;
+use Symfony\Component\Config\Loader\FileLoader;
 
 /**
  * IniFileLoader loads parameters from INI files.
@@ -62,7 +64,7 @@ class IniFileLoader extends FileLoader
 
         $ini = $this->parse($ini); //Parse for nested sections
 
-        return $this->resolveParams($ini); //Resolve parameter placeholders (%name%)
+        return ParamResolver::create()->resolve($ini); //Resolve parameter placeholders (%name%)
     }
 
     /**

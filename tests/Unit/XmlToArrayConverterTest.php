@@ -36,7 +36,7 @@ INVALID_XML;
     $this->converter->convert($invalidXml);
 })->throws(ConfigurationBuilderException::class, 'Invalid xml content');
 
-test('Errorin xml content', function () {
+test('Error in xml content', function () {
     $xmlWithError = <<< XML
 <?xml version='1.0' standalone='yes'?>
 <movies>

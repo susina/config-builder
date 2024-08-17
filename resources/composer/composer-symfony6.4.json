@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=8.0",
-        "symfony/config": "^5.4"
+        "symfony/config": "^6.4",
+        "susina/param-resolver": "^0.5.0"
     },
     "autoload": {
         "psr-4": {
@@ -30,10 +31,10 @@
         "ext-dom": "*",
         "pestphp/pest": "^1.22",
         "mikey179/vfsstream": "^1.6",
-        "psalm/phar": "^4.8",
+        "psalm/phar": "^5",
         "susina/coding-standard": "^2",
-        "symfony/yaml": "^5.4",
-        "nette/neon": "^3.3"
+        "symfony/yaml": "^6.4",
+        "nette/neon": "^3"
     },
     "scripts": {
         "analytics": "vendor/bin/psalm.phar",

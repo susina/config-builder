@@ -1,4 +1,4 @@
-<database>
+<database name="database_test">
     <auto_connect>true</auto_connect>
     <default_connection>mysql</default_connection>
     <connections>
