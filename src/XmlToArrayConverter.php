@@ -67,32 +67,41 @@ class XmlToArrayConverter
     private function simpleXmlToArray(SimpleXMLElement $xml): array
     {
         $ar = [];
+        $children = $xml->children();
+
+        if ($children === null) {
+            throw new ConfigurationBuilderException("Invalid XML element");
+        }
+
         /**
          * @var int|string $k
          * @var  mixed $v
          */
-        foreach ($xml->children() as $k => $v) {
+        foreach ($children as $k => $v) {
             // recurse the child
             $child = $this->simpleXmlToArray($v);
 
             // if it's not an array, then it was empty, thus a value/string
             $child = $child === [] ? $this->getConvertedXmlValue($v) : $child;
 
-            // add the children attributes as if they where children
-            foreach ($v->attributes() as $ak => $av) {
-                if ($ak === 'id') {
-                    // special exception: if there is a key named 'id'
-                    // then we will name the current key after that id
-                    $k = (string)$av;
-                    if (ctype_digit($k)) {
-                        $k = (int)$k;
+            $attributes = $v->attributes();
+            if ($attributes !== null) {
+                // add the children attributes as if they where children
+                foreach ($attributes as $ak => $av) {
+                    if ($ak === 'id') {
+                        // special exception: if there is a key named 'id'
+                        // then we will name the current key after that id
+                        $k = (string)$av;
+                        if (ctype_digit($k)) {
+                            $k = (int)$k;
+                        }
+                    } else {
+                        // otherwise, just add the attribute like a child element
+                        if (!is_array($child)) {
+                            $child = [];
+                        }
+                        $child[$ak] = $this->getConvertedXmlValue($av);
                     }
-                } else {
-                    // otherwise, just add the attribute like a child element
-                    if (!is_array($child)) {
-                        $child = [];
-                    }
-                    $child[$ak] = $this->getConvertedXmlValue($av);
                 }
             }
 
