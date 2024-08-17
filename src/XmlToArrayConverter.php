@@ -40,7 +40,7 @@ class XmlToArrayConverter
 
         $xml = simplexml_load_string($xmlToParse);
         if ($xml instanceof SimpleXMLElement) {
-            dom_import_simplexml($xml)->ownerDocument?->xinclude();
+            dom_import_simplexml($xml)->ownerDocument->xinclude();
         }
 
         $errors = libxml_get_errors();

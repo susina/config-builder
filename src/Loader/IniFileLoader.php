@@ -23,13 +23,6 @@ use Symfony\Component\Config\Loader\FileLoader;
 class IniFileLoader extends FileLoader
 {
     /**
-     * Separator for nesting levels of configuration data identifiers.
-     *
-     * @var string
-     */
-    private string $nestSeparator = '.';
-
-    /**
      * Returns true if this class supports the given resource.
      *
      * @param mixed  $resource A resource
@@ -79,8 +72,8 @@ class IniFileLoader extends FileLoader
 
         foreach ($data as $section => $value) {
             if (is_array($value)) {
-                if (str_contains($section, $this->nestSeparator)) {
-                    $sections = explode($this->nestSeparator, $section);
+                if (str_contains($section, '.')) {
+                    $sections = explode('.', $section);
                     $config = array_merge_recursive($config, $this->buildNestedSection($sections, $value));
                 } else {
                     $config[$section] = $this->parseSection($value);
@@ -142,7 +135,7 @@ class IniFileLoader extends FileLoader
      */
     private function parseKey(string $key, mixed $value, array &$config): void
     {
-        if (str_contains($key, $this->nestSeparator)) {
+        if (str_contains($key, '.')) {
             $this->parseNested($key, $value, $config);
         } else {
             $config[$key] = match ($value) {
@@ -160,7 +153,7 @@ class IniFileLoader extends FileLoader
             throw new ConfigurationBuilderException("Invalid key \"$key\"");
         }
 
-        $pieces = explode($this->nestSeparator, $key, 2);
+        $pieces = explode('.', $key, 2);
 
         if (!isset($config[$pieces[0]])) {
             if ($pieces[0] === '0' && !empty($config)) {
