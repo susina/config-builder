@@ -343,6 +343,9 @@ final class ConfigurationBuilder
         }
     }
 
+    /**
+     * @psalm-suppress NamedArgumentNotAllowed
+     */
     private function loadParameters(): array
     {
         $fileLocator = new FileLocator($this->directories);
