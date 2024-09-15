@@ -66,4 +66,4 @@ EOF;
     vfsStream::newFile('notreadable.neon', 200)->at($this->getRoot())->setContent($content);
     $actual = $this->loader->load('notreadable.neon');
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.neon" was expected to be readable.')
-    ->skip(running_on_windows());
+    ->skipOnWindows();

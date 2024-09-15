@@ -9,9 +9,8 @@
 namespace Susina\ConfigBuilder\Loader;
 
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
-use Susina\ConfigBuilder\Exception\XmlParseBuilderException;
-use Susina\ConfigBuilder\XmlToArrayConverter;
 use Susina\ParamResolver\ParamResolver;
+use Susina\XmlToArray\Converter;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Loader\FileLoader;
 
@@ -39,19 +38,20 @@ class XmlFileLoader extends FileLoader
      * @return array
      *
      * @throws ConfigurationBuilderException
-     * @throws XmlParseBuilderException
+     * @throws ConfigurationBuilderException
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
      */
     public function load(mixed $resource, ?string $type = null): array
     {
-        $converter = new XmlToArrayConverter();
-        $xml = file_get_contents($this->getLocator()->locate($resource));
-        if ($this->keepFirstTag) {
-            $xml = "<fake-tag>$xml</fake-tag>";
+        $xmlContent = file_get_contents($this->getLocator()->locate($resource));
+
+        if ($xmlContent === '') {
+            return [];
         }
 
-        $content = $converter->convert($xml);
+        $converter = new Converter(['preserveFirstTag' => $this->keepFirstTag]);
+        $content = $converter->convert($xmlContent);
 
         return ParamResolver::create()->resolve($content); //Resolve parameter placeholders (%name%)
     }

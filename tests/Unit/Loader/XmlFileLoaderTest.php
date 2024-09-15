@@ -10,6 +10,7 @@ use org\bovigo\vfs\vfsStream;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\XmlFileLoader;
+use Susina\XmlToArray\Exception\ConverterException;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
 beforeEach(function () {
@@ -52,7 +53,9 @@ text
 EOF;
     vfsStream::newFile('nonvalid.xml')->at($this->getRoot())->setContent($content);
     @$this->loader->load('nonvalid.xml');
-})->throws(ConfigurationBuilderException::class, 'Invalid xml content');
+})->throws(ConverterException::class, "An error occurred while parsing XML string:
+ - Fatal 4: Start tag expected, '<' not found
+");
 
 test('Empty xml file', function () {
     vfsStream::newFile('empty.xml')->at($this->getRoot())->setContent('');
@@ -72,4 +75,4 @@ XML;
     vfsStream::newFile('notreadable.xml', 200)->at($this->getRoot())->setContent($content);
     $this->loader->load('notreadable.xml');
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.xml" was expected to be readable.')
-    ->skip(running_on_windows());
+    ->skipOnWindows();
