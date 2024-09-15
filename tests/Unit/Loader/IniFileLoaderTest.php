@@ -10,7 +10,6 @@ use org\bovigo\vfs\vfsStream;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\FileLocator;
 use Susina\ConfigBuilder\Loader\IniFileLoader;
-use Susina\ConfigBuilder\Tests\VfsTrait;
 use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 
 beforeEach(function () {
@@ -160,7 +159,7 @@ EOF;
     vfsStream::newFile('notreadable.ini', 200)->at($this->getRoot())->setContent($content);
     $actual = $this->loader->load('notreadable.ini');
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.ini" was expected to be readable.')
-    ->skip(running_on_windows(), "Not executable on Windows");
+    ->skipOnWindows();
 
 test('Transform string into boolean', function () {
     $content = <<<EOF

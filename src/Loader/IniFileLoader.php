@@ -156,10 +156,6 @@ class IniFileLoader extends FileLoader
 
         $pieces = explode('.', $key, 2);
 
-        if (count($pieces) !== 2) {
-            throw new ConfigurationBuilderException("Invalid key \"$key\"");
-        }
-
         if (!isset($config[$pieces[0]])) {
             if ($pieces[0] === '0' && !empty($config)) {
                 $config = [$pieces[0] => $config];

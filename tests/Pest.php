@@ -14,16 +14,6 @@ use Susina\ConfigBuilder\Tests\VfsTrait;
 
 uses(VfsTrait::class)->in('Unit', 'Functional');
 
-/**
- * Return true if PHP is running on Windows operating system
- *
- * @return bool
- */
-function running_on_windows(): bool
-{
-    return str_contains(strtoupper(PHP_OS), 'WIN');
-}
-
 function fixtures_dir(): string
 {
     return __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures';

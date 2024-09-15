@@ -69,4 +69,4 @@ EOF;
     vfsStream::newFile('notreadable.json', 200)->at($this->getRoot())->setContent($content);
     $actual = $this->loader->load('notreadable.json');
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.json" was expected to be readable.')
-    ->skip(running_on_windows());
+    ->skipOnWindows();

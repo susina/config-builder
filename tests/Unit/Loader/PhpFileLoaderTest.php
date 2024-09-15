@@ -69,4 +69,4 @@ EOF;
     vfsStream::newFile('notreadable.php', 200)->at($this->getRoot())->setContent($content);
     $this->loader->load('notreadable.php');
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.php" was expected to be readable.')
-    ->skip(running_on_windows());
+    ->skipOnWindows();

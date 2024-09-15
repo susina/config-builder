@@ -70,4 +70,4 @@ EOF;
     $this->loader->load('notreadable.yaml');
 })
     ->throws(ConfigurationBuilderException::class, 'Path "vfs://root/notreadable.yaml" was expected to be readable.')
-    ->skip(running_on_windows(), "Not executable on Windows");
+    ->skipOnWindows();

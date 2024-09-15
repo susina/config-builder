@@ -109,7 +109,7 @@ test('Add not readable directory', function () {
     $dir = vfsStream::newDirectory('test_config', 200)->at($this->getRoot());
     ConfigurationBuilder::create()->addDirectory($dir->url());
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/test_config" was expected to be readable.')
-    ->skip(running_on_windows());
+    ->skipOnWindows();
 
 test('Set directories', function () {
     $builder = new ConfigurationBuilder();
@@ -176,7 +176,7 @@ test('Not readable cache directory', function () {
     $cacheDir = vfsStream::newDirectory('config_cache', 200)->at($this->getRoot());
     $builder = ConfigurationBuilder::create()->setCacheDirectory($cacheDir->url());
 })->throws(ConfigurationBuilderException::class, 'Path "vfs://root/config_cache" was expected to be readable.')
-    ->skip(running_on_windows());
+    ->skipOnWindows();
 
 test('Test forgot configuration class', function () {
     ConfigurationBuilder::create()->getConfiguration();

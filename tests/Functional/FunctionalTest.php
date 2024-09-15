@@ -234,6 +234,7 @@ test('Keep first xml tag', function () {
         ->and($config)->toBe(
             [
                 'database' => [
+                    'name' => 'database_test',
                     'auto_connect' => true,
                     'default_connection' => 'mysql',
                     'connections' => [
@@ -250,7 +251,6 @@ test('Keep first xml tag', function () {
                             'password' => 'pass'
                         ]
                     ],
-                    'name' => 'database_test'
                 ]
             ]
         );
