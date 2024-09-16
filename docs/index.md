@@ -15,11 +15,10 @@ Building a configuration is a three-step process:
 
 We ship loaders for the following file formats:
 
--  __.ini__
 -  __.json__ via PHP json extension
 -  __.neon__ via [Nette Neon](https://github.com/nette/neon) library
 -  __.php__
--  __.xml__ via PHP SimpleXml, Xml and Dom extensions
+-  __.xml__ via [Susina xml to array](https://github.com/susina/xml-to-array) library
 -  __.yml__ via [Symfony Yaml](https://symfony.com/doc/current/components/yaml.html) component
 
 

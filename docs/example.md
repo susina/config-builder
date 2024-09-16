@@ -167,5 +167,5 @@ $connection = new Connection(
 );
 
 $template = new Template();
-$template->setDir($config->get('paths.template');
+$template->setDir($config->get('paths.template'));
 ```

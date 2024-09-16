@@ -1,4 +1,4 @@
-The Configuration Builder supports the definition of some _parameters_ in your configuration file (any format). This functionality is inspired on [Symfony ParameterBag](https://github.com/symfony/symfony/blob/5.4/src/Symfony/Component/DependencyInjection/ParameterBag/ParameterBag.php).
+The Configuration Builder supports the definition of some _parameters_ in your configuration file (any format). This functionality is inspired on [Symfony ParameterBag](https://github.com/symfony/symfony/blob/5.4/src/Symfony/Component/DependencyInjection/ParameterBag/ParameterBag.php) and it's implemented by using [Susina ParamResolver](https://github.com/susina/param-resolver) library.
 
 A parameter is a previously defined property, put between `%` special character. When the builder found a parameter, it simply replaces its placeholder with the previously defined value. In example:
 
