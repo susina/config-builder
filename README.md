@@ -10,7 +10,7 @@ or arrays. It's based on [Symfony Config](https://symfony.com/doc/current/compon
 [Propel configuration sub-system](https://github.com/propelorm/Propel2/tree/master/src/Propel/Common/Config).
 
 Supported configuration file formats are:
-- __.ini__
+
 - __.json__ via PHP json extension
 - __.neon__ via [Nette Neon](https://github.com/nette/neon) library
 - __.php__

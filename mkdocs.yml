@@ -29,7 +29,6 @@ nav:
       - Usage: usage.md
       - Reference: 
         - Api: methods.md
-        - ini Format Reference: ini.md
         - Parameters reference: parameters.md
       - Complete Example: example.md
   - About:

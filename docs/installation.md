@@ -22,9 +22,8 @@ Here are the list of supported file formats and the libraries to load:
 
 |Format|Supported file extension|Library to load|Installation|
 |------|------------------------|---------------|-------|
-|_ini_|.ini, .ini.dist|Bundled with PHP by default|enabled by default|
 |_json_|.json, .json.dist|Bundled with PHP by default|enabled by default|
 |_neon_|.neon, .neon.dist|[Nette Neon](https://ne-on.org/)|`composer require nette/neon`|
 |_php_|.php, .php.dist|PHP itself|none|
-|_xml_|.xml, .xml.dist|[simple-xml](https://www.php.net/manual/en/book.simplexml.php), [lib-xml](https://www.php.net/manual/en/book.libxml.php) and [dom](https://www.php.net/manual/en/dom.setup.php) PHP extensions|Usually enabled by default (please, check your PHP configuration)|
+|_xml_|.xml, .xml.dist|[Susina Xml To Array](https://github.com/susina/xml-to-array)|Automatically installed by composer|
 |_yaml_|.yaml, .yml, .yaml.dist, .yml.dist|[Symfony Yaml](https://symfony.com/doc/current/components/yaml.html)|`composer require symfony/yaml`|
