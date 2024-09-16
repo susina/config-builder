@@ -350,7 +350,6 @@ final class ConfigurationBuilder
     {
         $fileLocator = new FileLocator($this->directories);
         $loaderResolver = new LoaderResolver([
-            new IniFileLoader($fileLocator),
             new JsonFileLoader($fileLocator),
             new NeonFileLoader($fileLocator),
             new PhpFileLoader($fileLocator),
