@@ -31,8 +31,9 @@ vendor/bin/pest
 
 ## Code Coverage
 
-We provides two commands to generate a code coverage report in _html_ or _xml_ format:
+We provides three commands to generate a code coverage report in _html_ or _xml_ format:
 
+-  `composer coverage` command to print a coverage report summary to the console
 -  `composer coverage:html` command generates a code coverage report in _html_ format, into the directory `coverage/`
 -  `composer coverage:clover` generates the report in _xml_ format, into `clover.xml` file.
 

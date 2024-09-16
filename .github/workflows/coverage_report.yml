@@ -9,19 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
-          extensions: dom, json, libxml, xml, simplexml
+          php-version: 8.3
           coverage: pcov
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3
         with:
           composer-options: "--prefer-dist --optimize-autoloader"
       - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v3.2.0
+        uses: paambaati/codeclimate-action@v8.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:

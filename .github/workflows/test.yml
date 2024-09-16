@@ -8,15 +8,15 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macOS-latest]
-        php-versions: ['8.0', '8.1', '8.2']
-        symfony-version: ['5.4', '6.0']
+        php-versions: ['8.2', '8.3']
+        symfony-version: ['6.4', '7.1']
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Set autocrlf on windows
         if: matrix.operating-system == 'windows-latest'
         run: git config --global core.autocrlf false
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -28,13 +28,11 @@ jobs:
           rm composer.json
           mv resources/composer/composer-symfony${{ matrix.symfony-version }}.json composer.json
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v3
         with:
           composer-options: "--prefer-dist --optimize-autoloader"
       - name: Check coding standard
         run: composer cs:check
-        env:
-          PHP_CS_FIXER_IGNORE_ENV: true
       - name: Static analysis tool
         run: composer analytics
       - name: Test suite
