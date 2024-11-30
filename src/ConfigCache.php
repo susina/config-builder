@@ -32,7 +32,7 @@ class ConfigCache extends BaseConfigCache
         return parent::isFresh();
     }
 
-    public function write(string $content, array $metadata = null): void
+    public function write(string $content, ?array $metadata = null): void
     {
         parent::write($content, $metadata);
 
