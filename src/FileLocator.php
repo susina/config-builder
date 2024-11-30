@@ -13,7 +13,7 @@ use Symfony\Component\Config\FileLocator as BaseFileLocator;
 
 class FileLocator extends BaseFileLocator
 {
-    public function locate(string $name, string $currentPath = null, bool $first = true): string|array
+    public function locate(string $name, ?string $currentPath = null, bool $first = true): string|array
     {
         $output = parent::locate($name, $currentPath, $first);
         if (!is_array($output)) {
