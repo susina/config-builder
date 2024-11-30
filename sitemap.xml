@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://susina.github.io/config-builder/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/contributing/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/example/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/installation/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/license/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/methods/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/parameters/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+    <url>
+         <loc>https://susina.github.io/config-builder/usage/</loc>
+         <lastmod>2024-11-30</lastmod>
+    </url>
+</urlset>
