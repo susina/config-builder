@@ -11,12 +11,12 @@ namespace Susina\ConfigBuilder;
 use IteratorAggregate;
 use SplFileInfo;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
-use Susina\ConfigBuilder\Loader\IniFileLoader;
 use Susina\ConfigBuilder\Loader\JsonFileLoader;
 use Susina\ConfigBuilder\Loader\NeonFileLoader;
 use Susina\ConfigBuilder\Loader\PhpFileLoader;
 use Susina\ConfigBuilder\Loader\XmlFileLoader;
 use Susina\ConfigBuilder\Loader\YamlFileLoader;
+use Susina\ParamResolver\ParamResolver;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Loader\DelegatingLoader;
@@ -62,6 +62,11 @@ final class ConfigurationBuilder
      * @var array Additional array of parameters to merge AFTER to load the configuration files.
      */
     private array $afterParams = [];
+
+    /**
+     * @var array An array of parameters to replace into the configuration, before parameters resolving and validating.
+     */
+    private array $replaces = [];
 
     private string $cacheDirectory = '';
 
@@ -265,6 +270,19 @@ final class ConfigurationBuilder
     }
 
     /**
+     * Set an array of parameters to replace.
+     *
+     * @param array<string, mixed> $params The parameters to replace
+     * @return $this
+     */
+    public function setReplaces(array $params): self
+    {
+        $this->replaces = $params;
+
+        return $this;
+    }
+
+    /**
      * Keep also the first tag of a xml configuration.
      *
      * @param bool $keep
@@ -358,7 +376,22 @@ final class ConfigurationBuilder
         ]);
         $delegatingLoader = new DelegatingLoader($loaderResolver);
 
-        return array_merge_recursive(...array_map([$delegatingLoader, 'load'], $this->files));
+        $parameters = array_merge_recursive(...array_map([$delegatingLoader, 'load'], $this->files));
+
+        //Add replaces to the array...
+        foreach ($this->replaces as $key => $value) {
+            $parameters[$key] = $value;
+        }
+
+        //Param resolver do the job...
+        $parameters = ParamResolver::create()->resolve($parameters);
+
+        //Remove replaces from the array.
+        foreach ($this->replaces as $key => $value) {
+            unset($parameters[$key]);
+        }
+
+        return $parameters;
     }
 
     private function loadConfiguration(): array
