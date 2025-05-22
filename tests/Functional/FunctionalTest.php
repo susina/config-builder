@@ -255,3 +255,51 @@ test('Keep first xml tag', function () {
             ]
         );
 });
+
+test('Replaces', function () {
+    $file = vfsStream::newFile('config.yml')->at($this->getRoot())->setContent(<<<yaml
+auto_connect: true
+default_connection: mysql
+connections:
+  mysql:
+    host:     localhost
+    driver:   mysql
+    username: user
+    password: pass
+  sqlite:
+    host:     '%kernel_dir%/database.sqlite'
+    driver:   sqlite
+    username: user
+    password: pass
+yaml);
+
+    $expected = [
+        'auto_connect' => true,
+        'default_connection' => 'mysql',
+        'connections' => [
+            'mysql' => [
+                'host' => 'localhost',
+                'driver' => 'mysql',
+                'username' => 'user',
+                'password' => 'pass'
+            ],
+            'sqlite' => [
+                'host' => 'vfs://root/database.sqlite',
+                'driver' => 'sqlite',
+                'username' => 'user',
+                'password' => 'pass'
+            ]
+        ]
+    ];
+
+    $config = ConfigurationBuilder::create()
+        ->addFile('config.yml')
+        ->addDirectory($this->getRoot()->url())
+        ->setConfigurationClass(ConfigurationConstructor::class)
+        ->setDefinition(new DatabaseConfiguration())
+        ->setReplaces(['kernel_dir' => 'vfs://root'])
+        ->getConfigurationArray()
+    ;
+
+    expect($config)->toBe($expected);
+});

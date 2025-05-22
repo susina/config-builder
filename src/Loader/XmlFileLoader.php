@@ -9,7 +9,6 @@
 namespace Susina\ConfigBuilder\Loader;
 
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
-use Susina\ParamResolver\ParamResolver;
 use Susina\XmlToArray\Converter;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Loader\FileLoader;
@@ -51,9 +50,8 @@ class XmlFileLoader extends FileLoader
         }
 
         $converter = new Converter(['preserveFirstTag' => $this->keepFirstTag]);
-        $content = $converter->convert($xmlContent);
 
-        return ParamResolver::create()->resolve($content); //Resolve parameter placeholders (%name%)
+        return $converter->convert($xmlContent);
     }
 
     /**
