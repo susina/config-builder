@@ -10,11 +10,22 @@ namespace Susina\ConfigBuilder;
 
 use Symfony\Component\Config\ConfigCache as BaseConfigCache;
 
+/**
+ * Specialized class to cache the built configuration.
+ * It extends `Symfony\Component\Config\ConfigCache` class.
+ *
+ * @author Cristiano Cinotti <cristianocinotti@gmail.com>
+ */
 class ConfigCache extends BaseConfigCache
 {
     private string $builderSerial;
     private string $serialFile;
 
+    /**
+     * @param string $file The cache file.
+     * @param bool $debug start/stop debug environment.
+     * @param ConfigurationBuilder $builder The object to save in cache.
+     */
     public function __construct(string $file, bool $debug, ConfigurationBuilder $builder)
     {
         parent::__construct($file, $debug);
@@ -23,6 +34,11 @@ class ConfigCache extends BaseConfigCache
         $this->serialFile = dirname($this->getPath()) . DIRECTORY_SEPARATOR . 'config_builder.serial';
     }
 
+    /**
+     * Check if the cache is fresh.
+     *
+     * @return bool
+     */
     public function isFresh(): bool
     {
         if (!file_exists($this->serialFile) || $this->builderSerial !== file_get_contents($this->serialFile)) {
@@ -32,6 +48,12 @@ class ConfigCache extends BaseConfigCache
         return parent::isFresh();
     }
 
+    /**
+     * Write the data into the cache.
+     *
+     * @param $content The content to write in cache.
+     * @param $metadata An optional array of metadata.
+     */
     public function write(string $content, ?array $metadata = null): void
     {
         parent::write($content, $metadata);

@@ -19,11 +19,10 @@ use Symfony\Component\Config\Loader\FileLoader;
 class NeonFileLoader extends FileLoader
 {
     /**
-     * Loads a Yaml file.
+     * Loads a Neon file.
      *
-     * @param mixed $resource The resource
-     * @param string|null $type The resource type
-     *
+     * @param mixed $resource The resource to load.
+     * @param string|null $type The resource type.
      * @return array
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
@@ -37,12 +36,10 @@ class NeonFileLoader extends FileLoader
 
     /**
      * Returns true if this class supports the given resource.
-     * Both 'yml' and 'yaml' extensions are accepted.
      *
-     * @param mixed $resource A resource
-     * @param string|null $type The resource type
-     *
-     * @return bool true if this class supports the given resource, false otherwise
+     * @param mixed $resource A resource.
+     * @param string|null $type The resource type.
+     * @return bool true If this class supports the given resource, false otherwise.
      */
     public function supports($resource, $type = null): bool
     {

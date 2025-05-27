@@ -10,6 +10,10 @@ namespace Susina\ConfigBuilder\Exception;
 
 use RuntimeException;
 
+/**
+ * Class ConfigurationBuilderException.
+ * Specialized Exception class for Configuration Builder.
+ */
 class ConfigurationBuilderException extends RuntimeException
 {
 }

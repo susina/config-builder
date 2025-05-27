@@ -12,6 +12,7 @@ edit_uri: ''
 copyright: 'Susina Configuration Builder is licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 license</a>'
 
 #Configuration
+site_dir: _site
 theme:
   name: material
   favicon: assets/hammer-and-wrench.png
@@ -28,7 +29,7 @@ nav:
       - Installation: installation.md
       - Usage: usage.md
       - Reference: 
-        - Api: methods.md
+        - Api: api/index.html
         - Parameters reference: parameters.md
       - Complete Example: example.md
   - About:
