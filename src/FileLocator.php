@@ -11,8 +11,18 @@ namespace Susina\ConfigBuilder;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Symfony\Component\Config\FileLocator as BaseFileLocator;
 
+/**
+ * Class to locate the configuration files to load.
+ *
+ * @author Cristiano Cinotti <cristianocinotti@gmail.com>
+ */
 class FileLocator extends BaseFileLocator
 {
+    /**
+     * @inheritdoc
+     *
+     * @throws ConfigurationBuilderException If the located files are not readable.
+     */
     public function locate(string $name, ?string $currentPath = null, bool $first = true): string|array
     {
         $output = parent::locate($name, $currentPath, $first);

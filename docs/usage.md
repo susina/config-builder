@@ -23,7 +23,7 @@ $builder = ConfigurationBuilder::create()
     ;
 ```
 
-You can set up the `ConfigurationBuilder` via all the methods explained into [Api Reference](methods.md) document.
+You can set up the `ConfigurationBuilder` via all the methods explained into [Api Reference](api/index.html) document.
 
 ## Get The Configuration as an Array
 

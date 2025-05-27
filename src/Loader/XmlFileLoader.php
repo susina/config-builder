@@ -10,13 +10,14 @@ namespace Susina\ConfigBuilder\Loader;
 
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\XmlToArray\Converter;
+use Susina\XmlToArray\Exception\ConverterException;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Config\Loader\FileLoader;
 
 /**
  * XmlFileLoader loads configuration parameters from xml file.
  *
- * @author Cristiano Cinotti
+ * @author Cristiano Cinotti <cristianocinotti@gmail.com>
  */
 class XmlFileLoader extends FileLoader
 {
@@ -31,13 +32,11 @@ class XmlFileLoader extends FileLoader
     /**
      * Loads a Xml file.
      *
-     * @param mixed $resource The resource
-     * @param string|null $type The resource type
-     *
+     * @param mixed $resource The resource to load.
+     * @param string|null $type The resource type.
      * @return array
-     *
-     * @throws ConfigurationBuilderException
-     * @throws ConfigurationBuilderException
+     * @throws ConverterException If an error occurs while parsing the xml.
+     * @throws ConfigurationBuilderException If an error occurs while reading the xml file.
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
      */
@@ -57,10 +56,9 @@ class XmlFileLoader extends FileLoader
     /**
      * Returns true if this class supports the given resource.
      *
-     * @param mixed $resource A resource
-     * @param string|null $type The resource type
-     *
-     * @return bool true if this class supports the given resource, false otherwise
+     * @param mixed $resource A resource.
+     * @param string|null $type The resource type.
+     * @return bool true If this class supports the given resource, false otherwise.
      */
     public function supports(mixed $resource, ?string $type = null): bool
     {

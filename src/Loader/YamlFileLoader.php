@@ -16,7 +16,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * YamlFileLoader loads configuration parameters from yaml file.
  *
- * @author Cristiano Cinotti
+ * @author Cristiano Cinotti <cristianocinotti@gmail.com>
  */
 class YamlFileLoader extends FileLoader
 {
@@ -25,11 +25,9 @@ class YamlFileLoader extends FileLoader
      *
      * @param mixed $resource The resource
      * @param string|null $type The resource type
-     *
      * @return array
-     *
-     * @throws ConfigurationBuilderException
-     * @throws ParseException if something goes wrong in parsing file
+     * @throws ConfigurationBuilderException If an error occurs while reading the file.
+     * @throws ParseException If something goes wrong in parsing the file.
      *
      * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns string, since 3rd argument isn't false
      */
@@ -52,10 +50,9 @@ class YamlFileLoader extends FileLoader
      * Returns true if this class supports the given resource.
      * Both 'yml' and 'yaml' extensions are accepted.
      *
-     * @param mixed $resource A resource
-     * @param string|null $type The resource type
-     *
-     * @return bool true if this class supports the given resource, false otherwise
+     * @param mixed $resource A resource.
+     * @param string|null $type The resource type.
+     * @return bool true If this class supports the given resource, false otherwise.
      */
     public function supports($resource, $type = null): bool
     {

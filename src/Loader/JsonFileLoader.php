@@ -13,16 +13,15 @@ use Symfony\Component\Config\Loader\FileLoader;
 /**
  * JsonFileLoader loads configuration parameters from json file.
  *
- * @author Cristiano Cinotti
+ * @author Cristiano Cinotti <cristianocinotti@gmail.com>
  */
 class JsonFileLoader extends FileLoader
 {
     /**
      * Loads a Json file.
      *
-     * @param mixed $resource The resource
+     * @param mixed $resource The resource to load.
      * @param string|null $type The resource type
-     *
      * @return array
      * @throws \JsonException
      *
@@ -43,8 +42,7 @@ class JsonFileLoader extends FileLoader
      *
      * @param mixed $resource A resource
      * @param string|null $type The resource type
-     *
-     * @return bool true if this class supports the given resource, false otherwise
+     * @return bool true If this class supports the given resource, false otherwise
      */
     public function supports($resource, $type = null): bool
     {

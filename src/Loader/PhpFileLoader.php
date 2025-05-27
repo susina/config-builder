@@ -23,17 +23,15 @@ use Symfony\Component\Config\Loader\FileLoader;
  *                );
  * </code>
  *
- * @author Cristiano Cinotti
+ * @author Cristiano Cinotti <cristianocinotti@gmail.com>
  */
 class PhpFileLoader extends FileLoader
 {
     /**
      * Loads a PHP file.
      *
-     * @param mixed $resource The resource
-     * @param string|null $type The resource type
-     *
-     *
+     * @param mixed $resource The resource to load.
+     * @param string|null $type The resource type.
      * @return array
      * @throws ConfigurationBuilderException
      *
@@ -66,10 +64,9 @@ class PhpFileLoader extends FileLoader
      * Returns true if this class supports the given resource.
      * It supports both .php and .inc extensions.
      *
-     * @param mixed $resource A resource
-     * @param string|null $type The resource type
-     *
-     * @return bool true if this class supports the given resource, false otherwise
+     * @param mixed $resource A resource.
+     * @param string|null $type The resource type.
+     * @return bool true if this class supports the given resource, false otherwise.
      */
     public function supports(mixed $resource, $type = null): bool
     {
