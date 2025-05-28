@@ -1,6 +1,6 @@
 ## Create Your Configuration Definition
 
-The first step to take is writing a `Symfony\Component\Config\Definition\ConfigurationInterface` class, 
+The first step to take is writing a `Symfony\Component\Config\Definition\ConfigurationInterface` class,
 to define the structure of your configuration.
 
 Please, read the [official Symfony documentation](https://symfony.com/doc/current/components/config/definition.html)
@@ -29,7 +29,7 @@ You can set up the `ConfigurationBuilder` via all the methods explained into [Ap
 
 Once you have your builder set up, you can get an array of loaded and processed parameters, by calling [getConfigurationArray](https://github.com/susina/config-builder/blob/master/src/ConfigurationBuilder.php#L286) method:
 
-```php 
+```php
 <?php declare(strict_types=1);
 
 use Susina\ConfigBuilder\ConfigurationBuilder;
@@ -47,7 +47,7 @@ $array = $builder->getConfigurationArray();
 
 or you can do it in one-line, thanks to the fluent api:
 
-```php 
+```php
 <?php declare(strict_types=1);
 
 use Susina\ConfigBuilder\ConfigurationBuilder;
@@ -69,7 +69,7 @@ You can set up your configuration class via `setConfigurationClass` method and, 
 
 Suppose you want to use a [dflydev/dot-access-data](https://github.com/dflydev/dflydev-dot-access-data) as configuration class (`Dflydev\DotAccessData\Data` class accept an array of parameters to the constructor):
 
-```php 
+```php
 <?php declare(strict_types=1);
 
 use Dflydev\DotAccessData\Data;
@@ -82,7 +82,7 @@ $builder->addDirectory('app/config')
     ->setDefinition(MyProjectConfiguration::class)
     ->setConfigurationClass(Data::class)
     ;
-    
+
 $config = $builder->getConfiguration();
 
 //Now, you can use your configuration class
@@ -97,7 +97,7 @@ Now, suppose you have a configuration class, like the following:
 namespace MyApp\MyNamespace;
 
 class ConfigManager {
-    
+
     public function init(array $params): void
     {
         //some operations with $params
@@ -135,9 +135,9 @@ If you set your cache directory, via `setCacheDirectory` method, after the first
 
 The cache is invalidated when one of the following events occurs:
 
-1.  one of the configuration files is changed
-2.  the `ConfigurationBuilder` set up is changed
-3.  one of the cache files is deleted
+1. one of the configuration files is changed
+2. the `ConfigurationBuilder` set up is changed
+3. one of the cache files is deleted
 
 In example, let's suppose you have an application and your bootstrap file looks something like this:
 
