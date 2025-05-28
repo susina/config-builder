@@ -24,22 +24,21 @@ example
 └───tests
 ```
 
--  `app/config/example-config.yml` is our configuration file
--  `var/cache` is our cache directory
--  `src/Configuration/ExampleConfiguration.php` is our definition class
+- `app/config/example-config.yml` is our configuration file
+- `var/cache` is our cache directory
+- `src/Configuration/ExampleConfiguration.php` is our definition class
 
 The application namespace is `App` and it points to `src` directory.
 
 We want to manage our configuration via [Dot Access Data](https://github.com/dflydev/dflydev-dot-access-data) library.
 
-
 ## Installation
 
 We need to install:
 
--  `susina/config-builder` (of course!)
--  `symfony/yaml` since we decide to use  _yaml_ format for our file
--  `dflydev/dot-access-data` we love to access the configuration properties via dot syntax
+- `susina/config-builder` (of course!)
+- `symfony/yaml` since we decide to use _yaml_ format for our file
+- `dflydev/dot-access-data` we love to access the configuration properties via dot syntax
 
 ```bash
 composer require susina/config-builder symfony/yaml dflydev/dot-access-data
@@ -51,25 +50,25 @@ The configuration file, we'll load and process, is `app/config/example-config.ya
 
 ```yaml title="app/config/example-config.yaml"
 app:
-    database:
-        auto_connect: true
-        default_connection: pgsql
-        connections:
-            pgsql:
-                host:     localhost
-                driver:   postgresql
-                username: user
-                password: pass
-            sqlite:
-                host:     localhost
-                driver:   sqlite
-                memory:   true
-                username: user
-                password: pass
-    
-    paths:
-        template: app/resources
-        logger: var/log
+  database:
+    auto_connect: true
+    default_connection: pgsql
+    connections:
+      pgsql:
+        host: localhost
+        driver: postgresql
+        username: user
+        password: pass
+      sqlite:
+        host: localhost
+        driver: sqlite
+        memory: true
+        username: user
+        password: pass
+
+  paths:
+    template: app/resources
+    logger: var/log
 ```
 
 ## The definition class
@@ -140,7 +139,7 @@ class ExampleConfiguration implements ConfigurationInterface
 
 ```
 
-## Let's go!
+## Let's go
 
 Let's use the `ConfigurationBuilder` to load and process our file and to instantiate the class, to manage the configuration:
 

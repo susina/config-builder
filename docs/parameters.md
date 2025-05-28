@@ -4,32 +4,32 @@ A parameter is a previously defined property, put between `%` special character.
 
 ```yaml
 general:
-    project: MyProject
+  project: MyProject
 
 paths:
-    projectDir: /home/%project%
+  projectDir: /home/%project%
 ```
 
 It becomes:
 
 ```yaml
 general:
-    project: MyProject
+  project: MyProject
 
 paths:
-    projectDir: /home/MyProject
+  projectDir: /home/MyProject
 ```
 
 You can escape the special character `%` by doubling it:
 
 ```yaml
 general:
-    project: 100%%
+  project: 100%%
 ```
 
 `project` property now contains the string `'100%'`.
 
-### Special parameters: environment variables ###
+### Special parameters: environment variables
 
 The parameter `env` is used to specify an environment variable. Many hosts give services or credentials via environment variables and you can use them in your configuration file via `env.variable` syntax.
 In example, let's suppose to have the following environment variables:
@@ -46,9 +46,9 @@ In your configuration file you can write:
 ```yaml
 project:
   database:
-      default:
-          adapter: mysql
-          dsn: mysql:host=%env.host%;dbname=%env.dbName%
+    default:
+      adapter: mysql
+      dsn: mysql:host=%env.host%;dbname=%env.dbName%
 ```
 
 and it becomes:
@@ -56,7 +56,7 @@ and it becomes:
 ```yaml
 project:
   database:
-      default:
-          adapter: mysql
-          dsn: mysql:host=192.168.0.54;dbname=myDB
+    default:
+      adapter: mysql
+      dsn: mysql:host=192.168.0.54;dbname=myDB
 ```
