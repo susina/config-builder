@@ -1,75 +1,71 @@
 {
-    "name": "susina/config-builder",
-    "type": "library",
-    "description": "Load and build configuration classes",
-    "license": "Apache-2.0",
-    "authors": [
-        {
-            "name": "Cristiano Cinotti",
-            "email": "cristianocinotti@gmail.com"
-        }
-    ],
-    "require": {
-        "php": ">=8.0",
-        "symfony/config": "^7.1",
-        "susina/param-resolver": "^0.5.0",
-        "susina/xml-to-array": "^1.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Susina\\ConfigBuilder\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Susina\\ConfigBuilder\\Tests\\": "tests/"
-        }
-    },
-    "require-dev": {
-        "ext-json": "*",
-        "ext-simplexml": "*",
-        "ext-libxml": "*",
-        "ext-dom": "*",
-        "pestphp/pest": "^2",
-        "mikey179/vfsstream": "^1.6",
-        "psalm/phar": "^5",
-        "susina/coding-standard": "^2",
-        "symfony/yaml": "^7",
-        "nette/neon": "^3"
-    },
-    "scripts": {
-        "analytics": "vendor/bin/psalm.phar",
-        "check": [
-            "@test",
-            "@analytics",
-            "@cs:fix"
-        ],
-        "coverage:html": "@test --coverage-html coverage/",
-        "coverage:clover": "@test --coverage-clover clover.xml",
-        "cs:check": "php-cs-fixer fix -v --diff --dry-run",
-        "cs:fix": "php-cs-fixer fix -v --diff",
-        "test": "pest"
-    },
-    "scripts-descriptions": {
-        "analytics": "Run static analysis tool",
-        "check": "Perform all tests and analysis, required before submitting a pull request",
-        "cs:check": "Run code style analysis, without fixing errors",
-        "cs:fix": "Run code style analysis and fix errors",
-        "coverage:html": "Create a code coverage report in html format, into the `coverage/` directory",
-        "coverage:clover": "Create a code coverage report in xml format, into the `clover.xml` file",
-        "test": "Run the test suite"
-    },
-    "suggest": {
-        "symfony/yaml": "Needed to load YAML configuration files",
-        "nette/neon": "Needed to load NEON configuration files",
-        "ext-json": "Needed to load JSON configuration files",
-        "ext-simplexml": "Needed to load XML configuration files",
-        "ext-dom": "Allows to include XML files into your XML configuration",
-        "ext-libxml": "Needed to manipulate XML configuration files"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+  "name": "susina/config-builder",
+  "type": "library",
+  "description": "Load and build configuration classes",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Cristiano Cinotti",
+      "email": "cristianocinotti@gmail.com"
     }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "symfony/config": "^7.1",
+    "susina/param-resolver": "^0.5.0",
+    "susina/xml-to-array": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Susina\\ConfigBuilder\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Susina\\ConfigBuilder\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "ext-json": "*",
+    "ext-simplexml": "*",
+    "ext-libxml": "*",
+    "ext-dom": "*",
+    "pestphp/pest": "^2",
+    "mikey179/vfsstream": "^1.6",
+    "psalm/phar": "^5",
+    "susina/coding-standard": "^2",
+    "symfony/yaml": "^7",
+    "nette/neon": "^3"
+  },
+  "scripts": {
+    "analytics": "vendor/bin/psalm.phar",
+    "check": ["@test", "@analytics", "@cs:fix"],
+    "coverage:html": "@test --coverage-html coverage/",
+    "coverage:clover": "@test --coverage-clover clover.xml",
+    "cs:check": "php-cs-fixer fix -v --diff --dry-run",
+    "cs:fix": "php-cs-fixer fix -v --diff",
+    "test": "pest"
+  },
+  "scripts-descriptions": {
+    "analytics": "Run static analysis tool",
+    "check": "Perform all tests and analysis, required before submitting a pull request",
+    "cs:check": "Run code style analysis, without fixing errors",
+    "cs:fix": "Run code style analysis and fix errors",
+    "coverage:html": "Create a code coverage report in html format, into the `coverage/` directory",
+    "coverage:clover": "Create a code coverage report in xml format, into the `clover.xml` file",
+    "test": "Run the test suite"
+  },
+  "suggest": {
+    "symfony/yaml": "Needed to load YAML configuration files",
+    "nette/neon": "Needed to load NEON configuration files",
+    "ext-json": "Needed to load JSON configuration files",
+    "ext-simplexml": "Needed to load XML configuration files",
+    "ext-dom": "Allows to include XML files into your XML configuration",
+    "ext-libxml": "Needed to manipulate XML configuration files"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }

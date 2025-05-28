@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `replaces` option to inject an external parameter to resolve. Useful, i.e. to pass
   `kernel_dir` or other parameters.
 - Add [phpdocumentor](https://phpdoc.org/) to generate the documentation api
+- Move quality tools from [Codeclimate](https://codeclimate.com/) to [Qlty](https://qlty.sh/)
 
 ### Changed
 

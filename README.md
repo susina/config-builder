@@ -2,7 +2,7 @@
 
 ![Tests](https://github.com/susina/config-builder/actions/workflows/test.yml/badge.svg)
 [![Maintainability](https://qlty.sh/badges/689d9c9a-29ce-4e10-93ea-21ccba522cf3/maintainability.svg)](https://qlty.sh/gh/susina/projects/config-builder)
-[![Maintainability](https://qlty.sh/badges/689d9c9a-29ce-4e10-93ea-21ccba522cf3/maintainability.svg)](https://qlty.sh/gh/susina/projects/config-builder)
+[![Code Coverage](https://qlty.sh/badges/689d9c9a-29ce-4e10-93ea-21ccba522cf3/test_coverage.svg)](https://qlty.sh/gh/susina/projects/config-builder)
 ![GitHub](https://img.shields.io/github/license/susina/config-builder)
 
 Susina Configuration Builder is a library to load parameters, from configuration files, and build configuration objects
