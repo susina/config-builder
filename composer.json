@@ -10,10 +10,11 @@
     }
   ],
   "require": {
-    "php": ">=8.2",
-    "symfony/config": "^6.4|^7.1",
-    "susina/param-resolver": "^0.5.0",
-    "susina/xml-to-array": "^1.0"
+    "php": ">=8.5",
+    "symfony/config": "^7.4|^8",
+    "susina/param-resolver": "^1.0",
+    "susina/xml-to-array": "^2.1",
+    "dflydev/dot-access-data": "^3.0"
   },
   "autoload": {
     "psr-4": {
@@ -27,32 +28,31 @@
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
-    "susina/coding-standard": "^2",
-    "symfony/yaml": "^6.4|^7.0",
-    "pestphp/pest": "^2",
-    "psalm/phar": "^5.25",
-    "nette/neon": "^3.4"
+    "symfony/yaml": "^7.4|^8",
+    "nette/neon": "^3.4",
+    "php-collective/toml": "^0.1.5",
+    "symfony/finder": "^7.4|^8"
   },
   "scripts": {
-    "analytics": "vendor/bin/psalm.phar",
+    "analytics": "php tools/phpstan",
+    "api:doc": "php tools/phpDocumentor",
     "check": [
       "@test",
       "@analytics",
       "@cs:fix"
     ],
-    "coverage": "@test --coverage",
     "coverage:html": "@test --coverage-html coverage/",
     "coverage:clover": "@test --coverage-clover clover.xml",
-    "cs:check": "php-cs-fixer fix -v --diff --dry-run",
-    "cs:fix": "php-cs-fixer fix -v --diff",
-    "test": "pest"
+    "cs:check": "php tools/php-cs-fixer fix -v --diff --dry-run",
+    "cs:fix": "php tools/php-cs-fixer fix -v --diff",
+    "test": "php tools/phpunit"
   },
   "scripts-descriptions": {
     "analytics": "Run static analysis tool",
+    "api:doc": "Generate the API documentation, via phpDocumentor, into '_site/api' directory",
     "check": "Perform all tests and analysis, required before submitting a pull request",
     "cs:check": "Run code style analysis, without fixing errors",
     "cs:fix": "Run code style analysis and fix errors",
-    "coverage": "Show the coverage report",
     "coverage:html": "Create a code coverage report in html format, into the `coverage/` directory",
     "coverage:clover": "Create a code coverage report in xml format, into the `clover.xml` file",
     "test": "Run the test suite"
@@ -64,10 +64,5 @@
     "ext-simplexml": "Needed to load XML configuration files",
     "ext-dom": "Allows to include XML files into your XML configuration",
     "ext-libxml": "Needed to manipulate XML configuration files"
-  },
-  "config": {
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
   }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * This file is part of susina/config-builder-builder package,
  * released under the APACHE-2 license.
@@ -10,15 +12,18 @@ namespace Susina\ConfigBuilder;
 
 use IteratorAggregate;
 use SplFileInfo;
+use Dflydev\DotAccessData\Data;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Loader\JsonFileLoader;
 use Susina\ConfigBuilder\Loader\NeonFileLoader;
 use Susina\ConfigBuilder\Loader\PhpFileLoader;
+use Susina\ConfigBuilder\Loader\TomlFileLoader;
 use Susina\ConfigBuilder\Loader\XmlFileLoader;
 use Susina\ConfigBuilder\Loader\YamlFileLoader;
 use Susina\ParamResolver\ParamResolver;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\Resource\FileResource;
@@ -46,14 +51,14 @@ final class ConfigurationBuilder
     private array $directories = [];
 
     /**
-     * @var ConfigurationInterface|null The definition object to process the configuration parameters.
+     * @var ConfigurationInterface|null The Symfony Config definition object to process the configuration parameters.
      */
     private ?ConfigurationInterface $definition = null;
 
     /**
      * @var string The configuration class to build.
      */
-    private string $configurationClass = '';
+    private string $configurationClass = Data::class;
 
     /**
      * @var string The name of the method to initialize the configuration object. If empty, the builder
@@ -62,7 +67,7 @@ final class ConfigurationBuilder
     private string $initMethod = '';
 
     /**
-     * @var array<string, mixed> Additional array of parameters to merge BEFORE loading the configuration files.
+     * @var array<string,mixed> Additional array of parameters to merge BEFORE loading the configuration files.
      */
     private array $beforeParams = [];
 
@@ -77,7 +82,7 @@ final class ConfigurationBuilder
     private array $replaces = [];
 
     /**
-     * @string The cache directory.
+     * @var string The cache directory.
      */
     private string $cacheDirectory = '';
 
@@ -89,7 +94,7 @@ final class ConfigurationBuilder
     /**
      * Static constructor.
      *
-     * @return static
+     * @return self
      */
     public static function create(): self
     {
@@ -114,7 +119,7 @@ final class ConfigurationBuilder
      * $builder->addFile('my-project-config.yaml.dist', 'my-project-config-yml');
      * ```
      *
-     * @param string|SplFileInfo ...$files The files to load.
+     * @param string[]|SplFileInfo[] ...$files The files to load.
      * @return $this
      */
     public function addFile(string|SplFileInfo ...$files): self
@@ -122,9 +127,9 @@ final class ConfigurationBuilder
         $this->files = array_merge(
             $this->files,
             array_map(
-                fn ($element): string => $element instanceof SplFileInfo ? $element->getPathname() : $element,
-                $files
-            )
+                fn($element): string => $element instanceof SplFileInfo ? $element->getPathname() : $element,
+                $files,
+            ),
         );
 
         return $this;
@@ -162,7 +167,7 @@ final class ConfigurationBuilder
      * $builder->setFiles($finder);
      * ```
      *
-     * @param array|IteratorAggregate $files The files to add.
+     * @param array<string,mixed>|IteratorAggregate $files The files to add.
      * @return $this
      */
     public function setFiles(array|IteratorAggregate $files): self
@@ -196,7 +201,7 @@ final class ConfigurationBuilder
      * $builder->addDirectory(__DIR__ . '/app/config', getcwd());
      * ```
      *
-     * @param string|SplFileInfo ...$dirs The directories to add.
+     * @param string[]|SplFileInfo[] ...$dirs The directories to add.
      * @return $this
      * @throws ConfigurationBuilderException If a directory does not exist or it's not writeable.
      */
@@ -216,8 +221,8 @@ final class ConfigurationBuilder
 
                     return $dirName;
                 },
-                $dirs
-            )
+                $dirs,
+            ),
         );
 
         return $this;
@@ -255,7 +260,7 @@ final class ConfigurationBuilder
      * $builder->setDirectories($dirs);
      * ```
      *
-     * @param array|IteratorAggregate $dirs Se the entire directories array.
+     * @param array<string,mixed>|IteratorAggregate $dirs Se the entire directories array.
      * @return $this
      * @throws ConfigurationBuilderException If a directory does not exist or it's not writeable.
      */
@@ -508,12 +513,6 @@ final class ConfigurationBuilder
      */
     public function getConfiguration(): object
     {
-        if ($this->configurationClass === '') {
-            throw new ConfigurationBuilderException(
-                'No configuration class to instantiate. Please, set it via `setConfigurationClass` method.'
-            );
-        }
-
         $parameters = $this->getConfigurationArray();
 
         if ($this->initMethod === '') {
@@ -529,7 +528,7 @@ final class ConfigurationBuilder
     /**
      * Return the loaded and processed configuration parameters as an associative array.
      *
-     * @return array
+     * @return array<int|string,mixed>
      */
     public function getConfigurationArray(): array
     {
@@ -552,21 +551,21 @@ final class ConfigurationBuilder
         $parameters = [];
         $this->getDotArray($config, $parameters);
 
-        array_map([$container, $method], array_keys($parameters), array_values($parameters));
+        array_map($container->$method(...), array_keys($parameters), array_values($parameters));
     }
 
     /**
      * Transform an array in dotted notation.
      * Useful to populate a di-container.
      *
-     * @param array $parameters The array to translate in dotted notation.
-     * @param array &$output The array to return.
-     * @param string $affix The optional affix to add to the dotted key.
+     * @param array<int|string,mixed> $parameters The array to translate in dotted notation.
+     * @param array<string,mixed> &$output The array to return.
+     * @param string $keyAffix The optional affix to add to the dotted key.
      */
     private function getDotArray(array $parameters, array &$output, string $keyAffix = ''): void
     {
         foreach ($parameters as $key => $value) {
-            $key = $keyAffix !== '' ? "$keyAffix.$key" : $key;
+            $key = $keyAffix !== '' ? "$keyAffix.$key" : (string) $key;
             if (is_array($value)) {
                 $this->getDotArray($value, $output, $key);
             } else {
@@ -578,17 +577,18 @@ final class ConfigurationBuilder
     /**
      * Load parameters from the configuration files.
      *
-     * @psalm-suppress NamedArgumentNotAllowed
+     * @return array<int|string,mixed>
      */
     private function loadParameters(): array
     {
         $fileLocator = new FileLocator($this->directories);
         $loaderResolver = new LoaderResolver([
             new JsonFileLoader($fileLocator),
+            new TomlFileLoader($fileLocator),
             new NeonFileLoader($fileLocator),
             new PhpFileLoader($fileLocator),
             new XmlFileLoader($fileLocator, $this->keepFirstXmlTag),
-            new YamlFileLoader($fileLocator)
+            new YamlFileLoader($fileLocator),
         ]);
         $delegatingLoader = new DelegatingLoader($loaderResolver);
 
@@ -613,6 +613,8 @@ final class ConfigurationBuilder
     /**
      * Process and validate the configuration.
      *
+     * @return array<int|string,mixed>
+     *
      * @throws ConfigurationBuilderException If the definition file is not set.
      */
     private function loadConfiguration(): array
@@ -625,18 +627,14 @@ final class ConfigurationBuilder
 
         return $processor->processConfiguration(
             $this->definition,
-            [$this->beforeParams, $this->loadParameters(), $this->afterParams]
+            [$this->beforeParams, $this->loadParameters(), $this->afterParams],
         );
     }
 
     /**
      * Load the configuration from cache.
      *
-     * @return array The configuration
-     *
-     * @psalm-suppress PossiblyInvalidArgument FileLocator::locate() returns a string
-     *                                         if the 3rd function argument is not set to false
-     * @psalm-suppress UnresolvableInclude
+     * @return array<int|string,mixed> The configuration
      */
     private function loadFromCache(): array
     {
@@ -646,15 +644,15 @@ final class ConfigurationBuilder
         if (!$cache->isFresh()) {
             $params = $this->loadConfiguration();
             $resources = array_map(
-                fn (string $file): FileResource => new FileResource($file),
-                array_map([new FileLocator($this->directories), 'locate'], $this->files)
+                fn(string $file): FileResource => new FileResource($file),
+                array_map([new FileLocator($this->directories), 'locate'], $this->files),
             );
             $code = "<?php declare(strict_types=1);\n\nreturn " . var_export($params, true) . ';';
 
             $cache->write($code, $resources);
             file_put_contents(
                 $this->cacheDirectory . DIRECTORY_SEPARATOR . 'config_builder.serial',
-                serialize($this)
+                serialize($this),
             );
         }
 

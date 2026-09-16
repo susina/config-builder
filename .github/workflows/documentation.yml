@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
           architecture: "x64"
@@ -28,24 +28,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          php-version: "8.5"
           coverage: none
       - name: Install composer dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
         with:
           composer-options: "--prefer-dist --optimize-autoloader"
-      - name: Download phpDocumentor phar archive
-        run: wget https://phpdoc.org/phpDocumentor.phar
+      - name: Install tools
+        uses: ngmy/phive-install-action@master
       - name: Build the coumentation api
-        run: php phpDocumentor.phar
+        run: composer api:doc
       - name: Deploy documentation api to Github Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site/api
           destination_dir: api
-

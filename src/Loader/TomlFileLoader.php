@@ -10,19 +10,19 @@ declare(strict_types=1);
 
 namespace Susina\ConfigBuilder\Loader;
 
-use Nette\Neon\Neon;
+use PhpCollective\Toml\Toml;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Symfony\Component\Config\Loader\FileLoader;
 
 /**
- * YamlFileLoader loads configuration parameters from yaml file.
+ * TomlFileLoader loads configuration parameters from toml file.
  *
  * @author Cristiano Cinotti
  */
-class NeonFileLoader extends FileLoader
+class TomlFileLoader extends FileLoader
 {
     /**
-     * Loads a Neon file.
+     * Loads a Toml file.
      *
      * @param mixed $resource The resource to load.
      * @param string|null $type The resource type.
@@ -30,7 +30,7 @@ class NeonFileLoader extends FileLoader
      */
     public function load(mixed $resource, ?string $type = null): array
     {
-        return Neon::decodeFile($this->getLocator()->locate($resource)) ?? [];
+        return Toml::decodeFile($this->getLocator()->locate($resource));
     }
 
     /**
@@ -42,6 +42,6 @@ class NeonFileLoader extends FileLoader
      */
     public function supports($resource, $type = null): bool
     {
-        return str_ends_with((string) $resource, '.neon') || str_ends_with((string) $resource, '.neon.dist');
+        return str_ends_with((string) $resource, '.toml') || str_ends_with((string) $resource, '.toml.dist');
     }
 }

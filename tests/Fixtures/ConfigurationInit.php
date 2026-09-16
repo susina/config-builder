@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * Apache-2 License.
  * This file is part of susina/config-builder package, release under the APACHE-2 license.

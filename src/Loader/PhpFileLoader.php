@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /*
  * Apache-2 License.
- * This file is part of susina/config-builder package, release under the APACHE-2 license.
+ * This file is part of susina/config-builder package, released under the APACHE-2 license.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -32,18 +34,21 @@ class PhpFileLoader extends FileLoader
      *
      * @param mixed $resource The resource to load.
      * @param string|null $type The resource type.
-     * @return array
+     * @return array<int|string,mixed>
      * @throws ConfigurationBuilderException
-     *
-     * @psalm-suppress UnresolvableInclude $path contains a path resolved by FileLocator
      */
     public function load(mixed $resource, ?string $type = null): array
     {
-        /** @var string $path */
         $path = $this->getLocator()->locate($resource);
 
+        $fileContent = @file_get_contents($path);
+
+        if ($fileContent === false) {
+            throw new ConfigurationBuilderException("The configuration file '$resource' does not exist or is not readable.");
+        }
+
         //empty file must return []
-        if (file_get_contents($path) === '') {
+        if ($fileContent === '') {
             return [];
         }
 
@@ -70,6 +75,6 @@ class PhpFileLoader extends FileLoader
      */
     public function supports(mixed $resource, $type = null): bool
     {
-        return str_ends_with((string)$resource, '.php') || str_ends_with((string)$resource, '.php.dist');
+        return str_ends_with((string) $resource, '.php') || str_ends_with((string) $resource, '.php.dist');
     }
 }
