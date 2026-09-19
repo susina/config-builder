@@ -1,0 +1,43 @@
+[project]
+site_name = "Susina Configuration Builder"
+site_description = "Load and build configuration"
+site_url = "https://susina.github.io/config-builder"
+copyright = "Susina Configuration Builder is licensed under <a href=\"https://www.apache.org/licenses/LICENSE-2.0\">Apache 2.0 license</a>"
+site_dir = "_site"
+repo_name = "susina/config-builder"
+repo_url = "https://github.com/susina/config-builder"
+nav = [
+  {"Home" = "index.md" },
+  {"Documentation" = [
+    { "Installation" = "installation.md" },
+    { "Usage" = "usage.md" },
+    { "Reference" = [
+      { "Api" = "api/index.html" },
+      { "Parameters Reference" = "parameters.md" }
+    ]},
+    { "Complete Example" = "example.md" }
+  ]},
+  { "About" = [
+    { "Contributing" = "contributing.md" },
+    { "License" = "license.md" }
+  ]}
+]
+
+[project.theme]
+variant = "classic"
+logo = "assets/white_hammer-and-wrench.png"
+favicon = "assets/hammer-and-wrench.png"
+palette.primary = "red"
+features = [
+  "navigation.tabs",
+  "navigation.top",
+  "navigation.footer"
+]
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.superfences = {}
+pymdownx.inlinehilite = {}
+pymdownx.tabbed.alternate_style = true
