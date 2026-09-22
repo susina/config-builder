@@ -30,7 +30,7 @@ example
 
 The application namespace is `App` and it points to `src` directory.
 
-We want to manage our configuration via [Dot Access Data](https://github.com/dflydev/dflydev-dot-access-data) library.
+We want to manage our configuration via [Dot Access Data](https://github.com/dflydev/dflydev-dot-access-data) library, which is the ConfigBuilder default.
 
 ## Installation
 
@@ -38,10 +38,9 @@ We need to install:
 
 - `susina/config-builder` (of course!)
 - `symfony/yaml` since we decide to use _yaml_ format for our file
-- `dflydev/dot-access-data` we love to access the configuration properties via dot syntax
 
 ```bash
-composer require susina/config-builder symfony/yaml dflydev/dot-access-data
+composer require susina/config-builder symfony/yaml
 ```
 
 ## Our configuration file
@@ -147,14 +146,12 @@ Let's use the `ConfigurationBuilder` to load and process our file and to instant
 <?php declare(strict_types=1);
 
 use App\Configuration\ExampleConfiguration;
-use Dflydev\DotAccessData\Data;
 
 
 $config = ConfigurationBuilder::create()
     ->addDirectory('app/config')
     ->addFile('example-config.yml')
     ->setDefinition(ExampleConfiguration::class)
-    ->setConfigurationClass(Data::class)
     ->setCacheDirectory('var/log')
     ->getConfiguration()
 ;

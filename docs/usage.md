@@ -18,7 +18,7 @@ use Susina\ConfigBuilder\ConfigurationBuilder;
 
 $builder = ConfigurationBuilder::create()
     ->addDirectory('app/config')
-    ->addFile('my-project-config-yml')
+    ->addFile('my-project-config.yml')
     ->setDefinition(MyProjectConfiguration::class)
     ;
 ```
@@ -38,7 +38,7 @@ $builder = new Configurationuilder();
 
 $builder
     ->addDirectory('app/config')
-    ->addFile('my-project-config-yml')
+    ->addFile('my-project-config.yml')
     ->setDefinition(MyProjectConfiguration::class)
     ;
 
@@ -54,7 +54,7 @@ use Susina\ConfigBuilder\ConfigurationBuilder;
 
 $array = ConfigurationBuilder::create()
     ->addDirectory('app/config')
-    ->addFile('my-project-config-yml')
+    ->addFile('my-project-config.yml')
     ->setDefinition(MyProjectConfiguration::class)
     ->getConfigurationArray()
     ;
@@ -67,29 +67,78 @@ This class should accept an array to the constructor or have an initialization m
 
 You can set up your configuration class via `setConfigurationClass` method and, if the class has an initialization method, you can use `setInitMethod`.
 
-Suppose you want to use a [dflydev/dot-access-data](https://github.com/dflydev/dflydev-dot-access-data) as configuration class (`Dflydev\DotAccessData\Data` class accept an array of parameters to the constructor):
+Let's suppose you have the following configuration class:
 
 ```php
 <?php declare(strict_types=1);
 
-use Dflydev\DotAccessData\Data;
+class MessConfiguration
+{
+    private array $parameters = [];
+
+    public function __construct(array $parameters)
+    {
+        $this->parameters = $parameters;
+    }
+
+    public function getParameters(): array
+    {
+        return $this->parameters;
+    }
+}
+
+```
+Actually, this class is a true mess to manage configurations but it's ok for our example.
+
+As you can see, the initialization happens via constructor.
+So, you can use it as following:
+
+```php
+<?php declare(strict_types=1);
+
 use Susina\ConfigBuilder\ConfigurationBuilder;
 
 $builder = new Configurationuilder();
 
 $builder->addDirectory('app/config')
-    ->addFile('my-project-config-yml')
+    ->addFile('my-project-config.yml')
     ->setDefinition(MyProjectConfiguration::class)
-    ->setConfigurationClass(Data::class)
+    ->setConfigurationClass(MessConfiguration::class)
     ;
 
 $config = $builder->getConfiguration();
 
-//Now, you can use your configuration class
-echo $config->get('database.connection');
+// $config is an instance of MessConfiguration class and you ca use it
+
+$config->getParameters();
 ```
+!!! Note
+    The Configuration Builder returns a [dflydev/dot-access-data](https://github.com/dflydev/dflydev-dot-access-data) (`Dflydev\DotAccessData\Data`) as default configuration class.
+
+    So, you can write the following:
+
+    ```php
+    <?php declare(strict_types=1);
+
+    use Dflydev\DotAccessData\Data;
+    use Susina\ConfigBuilder\ConfigurationBuilder;
+
+    $builder = new Configurationuilder();
+
+    $builder->addDirectory('app/config')
+        ->addFile('my-project-config.yml')
+        ->setDefinition(MyProjectConfiguration::class)
+        ;
+
+    $config = $builder->getConfiguration();
+
+    //$config is an instance of Dflydev\DotAccessData\Data
+    echo $config->get('database.connection');
+    ```
+
 
 Now, suppose you have a configuration class, like the following:
+
 
 ```php
 <?php declare(strict_types=1);
@@ -109,7 +158,8 @@ class ConfigManager {
 }
 ```
 
-You can set up the configuration builder to use the `init()` method, by calling `ConfigurationBuilder::setInitMethod`:
+As you can see, the initialization happens via `init` method, receiving an array of parameters.
+So, you can set up the configuration builder to use the `init()` method, by calling `ConfigurationBuilder::setInitMethod`:
 
 ```php
 <?php declare(strict_types=1);
@@ -119,7 +169,7 @@ use Susina\ConfigBuilder\ConfigurationBuilder;
 
 $config = Configurationuilder::create()
     ->addDirectory('app/config')
-    ->addFile('my-project-config-yml')
+    ->addFile('my-project-config.yml')
     ->setDefinition(MyProjectConfiguration::class)
     ->setConfigurationClass(ConfigManager::class)
     ->setInitMethod('init')

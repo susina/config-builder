@@ -1,190 +1,260 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /*
- * Apache-2 License.
- * This file is part of susina/config-builder package, release under the APACHE-2 license.
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Copyright (c) Cristiano Cinotti
+ *
+ * This file is part of susina/config-builder package, released under the APACHE-2 license.
+ * For the full copyright and license information, please view the LICENSE file distributed
+ * with this source code.
  */
 
+namespace Susina\ConfigBuilder\Tests\Unit;
+
+use Dflydev\DotAccessData\Data;
 use org\bovigo\vfs\vfsStream;
+use ReflectionObject;
+use SplFileInfo;
 use Susina\ConfigBuilder\ConfigurationBuilder;
 use Susina\ConfigBuilder\Exception\ConfigurationBuilderException;
 use Susina\ConfigBuilder\Tests\Fixtures\ConfigurationConstructor;
 use Susina\ConfigBuilder\Tests\Fixtures\DatabaseConfiguration;
-use Susina\ConfigBuilder\Tests\ReflectionTrait;
+use Susina\ConfigBuilder\Tests\TestCase;
 use Symfony\Component\Finder\Finder;
 
-uses(ReflectionTrait::class);
+class ConfigurationBuilderTest extends TestCase
+{
+    public function testAddFile(): void
+    {
+        $expected = ['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon'];
 
-test('Add file', function () {
-    $builder = new ConfigurationBuilder();
-    $builder->addFile($this->getConfigurationDistFile()->url(), $this->getConfigurationFile()->url());
-    $files = $this->getProperty($builder, 'files');
+        $builder = new ConfigurationBuilder();
+        $builder->addFile($this->distFile, $this->configFile);
+        $files = new ReflectionObject($builder)->getProperty('files')->getValue($builder);
 
-    expect($files)->toHaveCount(2)
-        ->and($files)->toBe(['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon']);
-});
-
-test('Add SplFileinfo', function () {
-    $builder = new ConfigurationBuilder();
-    $this->populate();
-    $finder = new Finder();
-    $finder->in($this->getRoot()->url())->files();
-    foreach ($finder as $file) {
-        $builder->addFile($file);
+        $this->assertCount(2, $files);
+        $this->assertSame($expected, $files);
     }
-    $files = $this->getProperty($builder, 'files');
 
-    expect($files)->toHaveCount(2)
-        ->and($files)->toBe([
-            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon.dist',
-            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon'
-        ]);
-});
+    public function testAddSplFileinfo(): void
+    {
+        $expected = ['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon'];
 
-test('Set files', function () {
-    $builder = new ConfigurationBuilder();
-    $array[] = $this->getConfigurationDistFile()->url();
-    $array[] = $this->getConfigurationFile()->url();
-    $builder->setFiles($array);
-    $files = $this->getProperty($builder, 'files');
+        $conf = new SplFileInfo($this->configFile);
+        $dist = new SplFileInfo($this->distFile);
+        $builder = new ConfigurationBuilder();
+        $builder->addFile($dist, $conf);
+        $files = new ReflectionObject($builder)->getProperty('files')->getValue($builder);
 
-    expect($files)->toHaveCount(2)
-        ->and($files)->toBe(['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon']);
-});
-
-test('Set file passing iterator', function () {
-    $builder = new ConfigurationBuilder();
-    $this->populate();
-    $finder = new Finder();
-    $finder->in($this->getRoot()->url())->files();
-    $builder->setFiles($finder);
-    $files = $this->getProperty($builder, 'files');
-
-    expect($files)->toHaveCount(2)
-        ->and($files)->toBe(
-            [
-            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon.dist',
-            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config_builder.neon'
-            ]
-        );
-});
-
-test('Add directory', function () {
-    $builder = new ConfigurationBuilder();
-    $builder->addDirectory(getcwd(), sys_get_temp_dir());
-    $dirs = $this->getProperty($builder, 'directories');
-
-    expect($dirs)->toHaveCount(2)
-        ->and($dirs)->toBe([getcwd(), sys_get_temp_dir()]);
-});
-
-test('Add directories passing SplFileinfo', function () {
-    vfsStream::newDirectory('config')->at($this->getRoot());
-    vfsStream::newDirectory('test_config')->at($this->getRoot());
-
-    $builder = new ConfigurationBuilder();
-    $finder = new Finder();
-    $finder->in($this->getRoot()->url())->directories();
-
-    foreach ($finder as $dir) {
-        $builder->addDirectory($dir);
+        $this->assertCount(2, $files);
+        $this->assertSame($expected, $files);
     }
-    $files = $this->getProperty($builder, 'directories');
 
-    expect($files)->toHaveCount(2)
-        ->and($files)->toBe(
-            [
-                $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config',
-                $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'test_config'
-            ]
-        );
-});
+    public function testSetFiles(): void
+    {
+        $expected = ['vfs://root/config_builder.neon.dist', 'vfs://root/config_builder.neon'];
 
-test('Add not existent directory', function () {
-    ConfigurationBuilder::create()->addDirectory('fake_dir');
-})->throws(ConfigurationBuilderException::class, 'Path "fake_dir" was expected to be a directory.');
+        $array[] = $this->distFile;
+        $array[] = $this->configFile;
 
-test('Add not readable directory', function () {
-    $dir = vfsStream::newDirectory('test_config', 200)->at($this->getRoot());
-    ConfigurationBuilder::create()->addDirectory($dir->url());
-})->throws(ConfigurationBuilderException::class, 'Path "vfs://root/test_config" was expected to be readable.')
-    ->skipOnWindows();
+        $builder = new ConfigurationBuilder();
+        $builder->setFiles($array);
+        $files = new ReflectionObject($builder)->getProperty('files')->getValue($builder);
 
-test('Set directories', function () {
-    $builder = new ConfigurationBuilder();
-    $builder->setDirectories([getcwd(), sys_get_temp_dir()]);
-    $dirs = $this->getProperty($builder, 'directories');
+        $this->assertCount(2, $files);
+        $this->assertSame($expected, $files);
+    }
 
-    expect($dirs)->toHaveCount(2)
-        ->and($dirs)->toBe([getcwd(), sys_get_temp_dir()]);
-});
+    public function testSetFilesPassingIterator(): void
+    {
+        $expected = ['vfs://root/config_builder.neon', 'vfs://root/config_builder.neon.dist'];
 
-test('Set directories passing iterator', function () {
-    vfsStream::newDirectory('config')->at($this->getRoot());
-    vfsStream::newDirectory('test_config')->at($this->getRoot());
+        $builder = new ConfigurationBuilder();
+        $finder = new Finder();
+        $finder->in($this->root->url())->name('config_builder.*')->files();
+        $builder->setFiles($finder);
+        $files = new ReflectionObject($builder)->getProperty('files')->getValue($builder);
 
-    $builder = new ConfigurationBuilder();
-    $finder = new Finder();
-    $finder->in($this->getRoot()->url())->directories();
-    $builder->setDirectories($finder);
-    $dirs = $this->getProperty($builder, 'directories');
+        $this->assertCount(2, $files);
+        $this->assertSame($expected, $files);
 
-    expect($dirs)->toHaveCount(2)
-        ->and($dirs)->toBe([
-            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'config',
-            $this->getRoot()->url() . DIRECTORY_SEPARATOR . 'test_config'
-        ]);
-});
+    }
 
-test('Set definition', function () {
-    $def = new DatabaseConfiguration();
-    $builder = ConfigurationBuilder::create()->setDefinition($def);
-    $definition = $this->getProperty($builder, 'definition');
+    public function testSetFilesOverwriteExistingFiles(): void
+    {
+        $builder = new ConfigurationBuilder();
 
-    expect($definition)->toBeInstanceOf(DatabaseConfiguration::class)
-        ->and($definition)->toBe($def);
-});
+        $finder1 = new Finder();
+        $finder1->in($this->root->url())->files();
+        $builder->setFiles($finder1);
+        $files1 = new ReflectionObject($builder)->getProperty('files')->getValue($builder);
+        $this->assertCount(6, $files1);
 
-test('Set configuration class', function () {
-    $builder = ConfigurationBuilder::create()
-        ->setConfigurationClass(ConfigurationConstructor::class);
-    $configClass = $this->getProperty($builder, 'configurationClass');
+        $finder2 = new Finder();
+        $finder2->in($this->root->url())->name('config_builder.*')->files();
+        $builder->setFiles($finder2);
+        $files2 = new ReflectionObject($builder)->getProperty('files')->getValue($builder);
+        $this->assertCount(2, $files2);
+    }
 
-    expect($configClass)->toBe(ConfigurationConstructor::class);
-});
+    public function testAddDirectory(): void
+    {
+        $expected = ['vfs://root/cache_dir', 'vfs://root/test_dir'];
 
-test('Invalid configuration class', function () {
-    ConfigurationBuilder::create()->setConfigurationClass('Susina\ConfigBuilder\Tests\FakeClass');
-})->throws(ConfigurationBuilderException::class, 'Class "Susina\ConfigBuilder\Tests\FakeClass" does not exist.');
+        $builder = new ConfigurationBuilder();
+        $builder->addDirectory("{$this->root->url()}/cache_dir", "{$this->root->url()}/test_dir");
+        $dirs = new ReflectionObject($builder)->getProperty('directories')->getValue($builder);
 
-test('Set cache directory', function () {
-    $cacheDir = vfsStream::newDirectory('config_cache')->at($this->getRoot());
-    $builder = ConfigurationBuilder::create()->setCacheDirectory($cacheDir->url());
+        $this->assertCount(2, $dirs);
+        $this->assertSame($expected, $dirs);
+    }
 
-    expect($this->getProperty($builder, 'cacheDirectory'))->toBe($cacheDir->url());
-});
+    public function testAddDirectoriesPassingSplFileinfo(): void
+    {
+        $expected = ['vfs://root/cache_dir', 'vfs://root/test_dir'];
 
-test('Not existent cache directory', function () {
-    ConfigurationBuilder::create()->setCacheDirectory(__DIR__ . DIRECTORY_SEPARATOR . 'fake_dir');
-})->throws(
-    ConfigurationBuilderException::class,
-    'Path "' . __DIR__ . DIRECTORY_SEPARATOR . 'fake_dir" was expected to be a directory.'
-);
+        $dir1 = new SplFileInfo("{$this->root->url()}/cache_dir");
+        $dir2 = new SplFileInfo("{$this->root->url()}/test_dir");
 
-test('Not readable cache directory', function () {
-    $cacheDir = vfsStream::newDirectory('config_cache', 200)->at($this->getRoot());
-    $builder = ConfigurationBuilder::create()->setCacheDirectory($cacheDir->url());
-})->throws(ConfigurationBuilderException::class, 'Path "vfs://root/config_cache" was expected to be readable.')
-    ->skipOnWindows();
+        $builder = new ConfigurationBuilder();
+        $builder->addDirectory($dir1, $dir2);
+        $dirs = new ReflectionObject($builder)->getProperty('directories')->getValue($builder);
 
-test('Test forgot configuration class', function () {
-    ConfigurationBuilder::create()->getConfiguration();
-})->throws(ConfigurationBuilderException::class, 'No configuration class to instantiate. Please, set it via `setConfigurationClass` method.');
+        $this->assertCount(2, $dirs);
+        $this->assertSame($expected, $dirs);
+    }
 
-test('Forgot definition object', function () {
-    ConfigurationBuilder::create()
-        ->setConfigurationClass(ConfigurationConstructor::class)
-        ->getConfiguration()
-    ;
-})->throws(ConfigurationBuilderException::class, 'No definition class. Please, set one via `setDefinition` method.');
+    public function testAddNotExistentDirectoryThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessageIs('Path "fake_dir" was expected to be a directory.');
+
+        ConfigurationBuilder::create()->addDirectory('fake_dir');
+    }
+
+    public function testAddNotReadableDirectoryThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessageIs('Path "vfs://root/test_config" was expected to be readable.');
+
+        $dir = vfsStream::newDirectory('test_config', 200)->at($this->root);
+        ConfigurationBuilder::create()->addDirectory($dir->url());
+    }
+
+    public function testSetDirectories(): void
+    {
+        $expected = ['vfs://root/cache_dir', 'vfs://root/test_dir'];
+
+        $builder = new ConfigurationBuilder();
+        $builder->setDirectories($expected);
+        $dirs = new ReflectionObject($builder)->getProperty('directories')->getValue($builder);
+
+        $this->assertCount(2, $dirs);
+        $this->assertSame($expected, $dirs);
+    }
+
+    public function testSetDirectoriesPassingIterator(): void
+    {
+        $expected = ['vfs://root/cache_dir', 'vfs://root/test_dir'];
+
+        $builder = new ConfigurationBuilder();
+        $finder = new Finder();
+        $finder->in($this->root->url())->directories();
+        $builder->setDirectories($finder);
+        $dirs = new ReflectionObject($builder)->getProperty('directories')->getValue($builder);
+
+        $this->assertCount(2, $dirs);
+        $this->assertSame($expected, $dirs);
+    }
+
+    public function testSetDirectoriesOverwriteExistingOnes(): void
+    {
+        vfsStream::newDirectory('first')->at($this->root);
+        vfsStream::newDirectory('second')->at($this->root);
+
+        $builder = new ConfigurationBuilder();
+        $finder1 = new Finder();
+        $finder1->in($this->root->url())->directories();
+        $builder->setDirectories($finder1);
+        $dirs1 = new ReflectionObject($builder)->getProperty('directories')->getValue($builder);
+        $this->assertCount(4, $dirs1);
+
+        $finder2 = new Finder();
+        $finder2->in($this->root->url())->name('*_dir')->directories();
+        $builder->setDirectories($finder2);
+        $dirs2 = new ReflectionObject($builder)->getProperty('directories')->getValue($builder);
+        $this->assertCount(2, $dirs2);
+    }
+
+    public function testSetDefinition(): void
+    {
+        $def = new DatabaseConfiguration();
+        $builder = ConfigurationBuilder::create()->setDefinition($def);
+        $definition = new ReflectionObject($builder)->getProperty('definition')->getValue($builder);
+
+        $this->assertInstanceOf(DatabaseConfiguration::class, $definition);
+        $this->assertSame($definition, $def);
+    }
+
+    public function testSetConfigurationClass(): void
+    {
+        $builder = ConfigurationBuilder::create()
+            ->setConfigurationClass(ConfigurationConstructor::class);
+        $configClass = new ReflectionObject($builder)->getProperty('configurationClass')->getValue($builder);
+
+        $this->assertSame($configClass, ConfigurationConstructor::class);
+    }
+
+    public function testInvalidConfigurationClassThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessageIs('Class "Susina\ConfigBuilder\Tests\FakeClass" does not exist.');
+
+        ConfigurationBuilder::create()->setConfigurationClass('Susina\ConfigBuilder\Tests\FakeClass');
+    }
+
+    public function testSetCacheDirectory(): void
+    {
+        $builder = ConfigurationBuilder::create()->setCacheDirectory("{$this->root->url()}/cache_dir");
+        $dir = new ReflectionObject($builder)->getProperty('cacheDirectory')->getValue($builder);
+
+        $this->assertSame('vfs://root/cache_dir', $dir);
+    }
+
+    public function testNotExistentCacheDirectoryThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessageIs('Path "vfs://root/fake_dir" was expected to be a directory.');
+
+        ConfigurationBuilder::create()->setCacheDirectory('vfs://root/fake_dir');
+    }
+
+    public function testNotReadableCacheDiresctoryThrowsException(): void
+    {
+        if ($this->runnungOnWindows()) {
+            $this->markTestSkipped('Cannot set a directory not readable under Windows');
+        }
+
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessageIs('Path "vfs://root/config_cache" was expected to be readable.');
+
+        $cacheDir = vfsStream::newDirectory('config_cache', 200)->at($this->root);
+        $builder = ConfigurationBuilder::create()->setCacheDirectory($cacheDir->url());
+    }
+
+    public function testDefaultConfigurationClass(): void
+    {
+        $object = ConfigurationBuilder::create()->setDefinition(new DatabaseConfiguration())->getConfiguration();
+
+        $this->assertInstanceOf(Data::class, $object);
+    }
+
+    public function testNoDefinitionObjectThrowsException(): void
+    {
+        $this->expectException(ConfigurationBuilderException::class);
+        $this->expectExceptionMessageIs('No definition class. Please, set one via `setDefinition` method.');
+
+        ConfigurationBuilder::create()->getConfiguration();
+    }
+}

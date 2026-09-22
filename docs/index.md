@@ -1,7 +1,7 @@
 # Susina Configuration Builder
 
 Susina Configuration Builder is a library to load and build configuration objects or arrays.
-It's based on [Symfony Config](https://symfony.com/doc/current/components/config.html) and it's heavily inspired on
+It's based on [Symfony Config](https://symfony.com/doc/current/components/config.html) and it's inspired on
 [Propel configuration sub-system](https://github.com/propelorm/Propel2/tree/master/src/Propel/Common/Config).
 
 ---
@@ -12,11 +12,18 @@ Building a configuration is a three-step process:
 2. process the loaded parameters to normalize and validate them
 3. return an array of cleaned parameters or a configuration object
 
+!!! Note
+    The configuration builder returns an instance of [Dflydev\DotAccessData\Data](https://github.com/dflydev/dflydev-dot-access-data/blob/main/src/Data.php) by default.
+
+    Please, see [https://github.com/dflydev/dflydev-dot-access-data](https://github.com/dflydev/dflydev-dot-access-data) repository for further information.
+
+
 We ship loaders for the following file formats:
 
 - **.json** via PHP json extension
 - **.neon** via [Nette Neon](https://github.com/nette/neon) library
 - **.php**
+- **.toml** via [PHP Toml](https://php-collective.github.io/toml/)
 - **.xml** via [Susina xml to array](https://github.com/susina/xml-to-array) library
 - **.yml** via [Symfony Yaml](https://symfony.com/doc/current/components/yaml.html) component
 

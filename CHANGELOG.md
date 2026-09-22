@@ -5,6 +5,21 @@ All notable changes to `susina/config-builder` project will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [2.0] - 2026-09-19
+
+### Added
+
+- Now the ConfigBuilder returns a `Dflydev\DotAccessData\Data` by default.
+- Add Phive to manage tools in phar format, to avoid dependencies conflicts as much as possible.
+- Add PHPStan for static analisys
+
+### Changed
+
+- ConfigBuilder now returns `Dflydev\DotAccessData\Data` object by default.
+- Return back to PHPUnit, which is manageable via Phive.
+- Bump to PHP 8.5+
+- Move coding standard to PER 3.x
+
 ### [1.1] - 2025-05-28
 
 ### Added
