@@ -14,6 +14,7 @@ Supported configuration file formats are:
 - **.json** via PHP json extension
 - **.neon** via [Nette Neon](https://github.com/nette/neon) library
 - **.php**
+- **.toml** via [PHP Toml](https://php-collective.github.io/toml/) library
 - **.xml** via PHP SimpleXml, Xml and Dom extensions
 - **.yml** via [Symfony Yaml](https://symfony.com/doc/current/components/yaml.html) component
 
