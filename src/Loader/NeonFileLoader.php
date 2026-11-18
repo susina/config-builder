@@ -16,7 +16,7 @@ use Nette\Neon\Neon;
 use Symfony\Component\Config\Loader\FileLoader;
 
 /**
- * YamlFileLoader loads configuration parameters from yaml file.
+ * NeonFileLoader loads configuration parameters from neon file.
  *
  * @author Cristiano Cinotti
  */

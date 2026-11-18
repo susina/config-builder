@@ -4,17 +4,27 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="https://www.phpdoc.org"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpDocumentor/phpDocumentor/master/data/xsd/phpdoc.xsd"
->
+    >
+    <title>Susina Config Builder</title>
+
     <paths>
-        <output>_site/api</output>
-        <cache>_site/cache</cache>
+        <output>.phpdoc/build</output>
+        <cache>.phpdoc/cache</cache>
     </paths>
-    <version number="1.1">
+    <version number="latest">
         <api>
+            <output>api</output>
             <source dsn=".">
                 <path>src</path>
             </source>
         </api>
+        <guide>
+            <source dsn=".">
+                <path>docs</path>
+            </source>
+            <output>guide</output>
+        </guide>
     </version>
+    <setting name="guides.enabled" value="true"/>
     <setting name="template.color" value="red"/>
 </phpdocumentor>
