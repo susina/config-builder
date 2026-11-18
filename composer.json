@@ -35,7 +35,6 @@
   },
   "scripts": {
     "analytics": "php tools/phpstan",
-    "api:doc": "php tools/phpDocumentor",
     "check": [
       "@test",
       "@analytics",
@@ -45,21 +44,29 @@
     "coverage:clover": "@test --coverage-clover clover.xml",
     "cs:check": "php tools/php-cs-fixer fix -v --diff --dry-run",
     "cs:fix": "php tools/php-cs-fixer fix -v --diff",
-    "test": "php tools/phpunit"
+    "test": "php tools/phpunit",
+    "docs:build": "php tools/phpDocumentor",
+    "docs:serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@docs:build",
+      "php -S localhost:8000 -t .phpdoc/build"
+    ]
   },
   "scripts-descriptions": {
     "analytics": "Run static analysis tool",
-    "api:doc": "Generate the API documentation, via phpDocumentor, into '_site/api' directory",
     "check": "Perform all tests and analysis, required before submitting a pull request",
     "cs:check": "Run code style analysis, without fixing errors",
     "cs:fix": "Run code style analysis and fix errors",
     "coverage:html": "Create a code coverage report in html format, into the `coverage/` directory",
     "coverage:clover": "Create a code coverage report in xml format, into the `clover.xml` file",
+    "docs:build": "Generate the project documentation into the `.phpdoc/build/` directory",
+    "docs:serve": "Start the PHP development server to serve the project documentation on http://localhost:8000",
     "test": "Run the test suite"
   },
   "suggest": {
     "symfony/yaml": "Needed to load YAML configuration files",
     "nette/neon": "Needed to load NEON configuration files",
+    "php-collective/toml": "Needed to load TOML configuration files",
     "ext-json": "Needed to load JSON configuration files",
     "ext-simplexml": "Needed to load XML configuration files",
     "ext-dom": "Allows to include XML files into your XML configuration",

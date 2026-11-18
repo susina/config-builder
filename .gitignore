@@ -1,8 +1,10 @@
-*.cache
+*cache
 clover.xml
 composer.phar
 composer.lock
+phpunit.xml
+.phpdoc/build
+.phpdoc/cache
 coverage/
-tools/
 vendor/
-_site/
+tools/
